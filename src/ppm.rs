@@ -43,7 +43,7 @@ impl Ppm {
     }
 
     fn write_header<ImageWriter: Write>(&self, image_writer: &mut ImageWriter) -> Result<()> {
-        Ok(write!(image_writer, "P3\n{} {}\n255\n", self.width.get(), self.height.get())?)
+        Ok(writeln!(image_writer, "P3\n{} {}\n255", self.width.get(), self.height.get())?)
     }
 
     fn write_pixel_row<ImageWriter: Write>(

@@ -14,6 +14,7 @@
     clippy::match_bool,
     clippy::missing_errors_doc,
     clippy::module_name_repetitions,
+    clippy::non_ascii_literal,
     clippy::pub_enum_variant_names,
     clippy::wildcard_imports
 )]

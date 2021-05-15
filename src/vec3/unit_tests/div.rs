@@ -1,0 +1,18 @@
+#![allow(non_snake_case, clippy::unwrap_used)]
+
+use assert2::assert;
+use super::*;
+
+#[test]
+fn returns_expected_result() {
+    // Given
+    let expected = Vec3::new(10.0, 20.0, 30.0);
+    let a = Vec3::new(80.0, 160.0, 240.0);
+    let s = 8.0;
+
+    // When
+    let result = a / s;
+
+    // Then
+    assert!(result == expected);
+}

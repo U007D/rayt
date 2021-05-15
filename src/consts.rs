@@ -17,3 +17,4 @@ pub(crate) const IMAGE: Image = Image {
 
 const U8_DISTINCT_VALUES: f64 = 256.0;
 pub(crate) const U8_DISTINCT_VALUES_LESS_ONE_ULP: f64 = U8_DISTINCT_VALUES - f64::EPSILON;
+

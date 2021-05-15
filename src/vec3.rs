@@ -1,8 +1,13 @@
+#[cfg(test)]
+mod unit_tests;
+
 use crate::consts::*;
+use bool_ext::BoolExt;
 use std::{
     array,
-    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub}
+    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub},
 };
+use std::ops::SubAssign;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vec3 {
@@ -34,11 +39,19 @@ impl Vec3 {
 
     #[must_use]
     fn length_squared(&self) -> f64 {
-        self.x().mul_add(self.x(), self.y().mul_add(self.y(), self.z().mul_add(self.z(), 0.0)))
+        self.x().mul_add(self.x(), self.y().mul_add(self.y(), self.z() * self.z()))
     }
 
     #[must_use]
-    pub fn unit_vector(&self) -> Self { *self / self.length() }
+    pub fn unit_vector(&self) -> Self {
+        (self.length() == 0.0).map_or_else(
+            || *self / self.length(),
+            || {
+                let root_one_third = (1.0_f64 / 3.0).sqrt();
+                Self { x: root_one_third, y: root_one_third, z: root_one_third }
+            },
+        )
+    }
 
     #[must_use]
     pub const fn x(&self) -> f64 { self.x }
@@ -149,3 +162,12 @@ impl Sub for Vec3 {
         Self { x: self.x() - rhs.x(), y: self.y() - rhs.y(), z: self.z() - rhs.z() }
     }
 }
+
+impl SubAssign for Vec3 {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.x -= rhs.x();
+        self.y -= rhs.y();
+        self.z -= rhs.z();
+    }
+}
+

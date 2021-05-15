@@ -18,7 +18,6 @@ path = "src/lib.rs"
 structopt = "0.3.21"
 thiserror = "1.0.24"
 bool_ext = "0.5.1"
-num-traits = "0.2.14"
 conv = "0.3.3"
 
 [dev-dependencies]
