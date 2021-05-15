@@ -29,15 +29,19 @@
 // #![allow(clippy::implicit_return)]
 
 mod args;
+mod color;
 pub mod consts;
 pub mod error;
+mod point3;
 mod ppm;
+mod vec3;
 
 pub use args::Args;
-pub use {error::{Error, Result}, ppm::Ppm};
+pub use {color::Color, error::{Error, Result}, point3::Point3, ppm::Ppm};
 use crate::consts::IMAGE;
 use std::fs::File;
 use std::io::stdout;
+
 
 #[allow(clippy::missing_const_for_fn, clippy::needless_pass_by_value)] //remove when `lib_main` impl'ed
 pub fn lib_main(args: Args) -> Result<()> {

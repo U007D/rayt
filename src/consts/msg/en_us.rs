@@ -5,3 +5,4 @@ pub const ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO: &str =
 pub const ERR_CONVERSION: &str = "Numeric types conversion error";
 pub const OVERFLOWED: &str = "overflowed";
 pub const PROGRESS: &str = "Progress";
+pub const ERR_VEC3_INDEX_OUT_OF_BOUNDS: &str = "`Vec3` index out of bounds.  Index must be 0, 1 or 2";
