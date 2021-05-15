@@ -1,3 +1,4 @@
+#![feature(const_option)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(
@@ -13,6 +14,7 @@
     clippy::match_bool,
     clippy::missing_errors_doc,
     clippy::module_name_repetitions,
+    clippy::pub_enum_variant_names,
     clippy::wildcard_imports
 )]
 // To use the `unsafe` keyword, do not remove the `unsafe_code` attribute entirely.
@@ -29,11 +31,18 @@
 mod args;
 pub mod consts;
 pub mod error;
+mod ppm;
 
 pub use args::Args;
-use error::Result;
+pub use {error::{Error, Result}, ppm::Ppm};
+use crate::consts::IMAGE;
+use std::fs::File;
+use std::io::stdout;
 
 #[allow(clippy::missing_const_for_fn, clippy::needless_pass_by_value)] //remove when `lib_main` impl'ed
-pub fn lib_main(_args: Args) -> Result<()> {
-    Ok(())
+pub fn lib_main(args: Args) -> Result<()> {
+    let output_file = File::create(args.output_image)?;
+    let stdout = stdout();
+    let img = Ppm::new(IMAGE.width, IMAGE.height)?;
+    img.render(output_file, stdout)
 }

@@ -1,8 +1,11 @@
 mod io;
 
 use crate::consts::msg;
-use std::ffi::OsString;
+use std::{
+    ffi::OsString
+};
 use thiserror::Error;
+use conv::PosOverflow;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -12,12 +15,25 @@ pub enum Error {
     ArgNotConvertibleToUtf8(std::ffi::OsString),
     #[error(transparent)]
     IoError(#[from] io::Error),
+    #[error("{}: {} {}", msg::ERR_CONVERSION, 0, msg::OVERFLOWED)]
+    ConversionError(String),
 }
 
-// Note: `std::ffi::OsString is not `Error` so `thiserror` `#[from]` is not supported,
-//       hence manual `From` impl
+impl From<conv::PosOverflow<usize>> for Error {
+    fn from(err: PosOverflow<usize>) -> Self {
+        Self::ConversionError(err.to_string())
+    }
+}
+
 impl From<std::ffi::OsString> for Error {
     fn from(err: OsString) -> Self {
         Self::ArgNotConvertibleToUtf8(err)
     }
 }
+
+impl From<std::io::Error> for Error {
+    fn from(err: std::io::Error) -> Self {
+        io::Error(err).into()
+    }
+}
+

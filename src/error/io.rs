@@ -5,7 +5,7 @@ use std::{
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub struct Error(IoError);
+pub struct Error(pub(super) IoError);
 
 impl Clone for Error {
     fn clone(&self) -> Self {
