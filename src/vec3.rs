@@ -1,7 +1,7 @@
 use crate::consts::*;
 use std::{
     array,
-    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub},
+    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub}
 };
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -99,15 +99,15 @@ impl Index<usize> for Vec3 {
 }
 
 impl IntoIterator for Vec3 {
-    type IntoIter = array::IntoIter<f64, 3>;
     type Item = f64;
+    type IntoIter = array::IntoIter<f64, 3>;
 
     fn into_iter(self) -> Self::IntoIter { array::IntoIter::new([self.x(), self.y(), self.z()]) }
 }
 
 impl<'a> IntoIterator for &'a Vec3 {
-    type IntoIter = array::IntoIter<f64, 3>;
     type Item = f64;
+    type IntoIter = array::IntoIter<f64, 3>;
 
     fn into_iter(self) -> Self::IntoIter { (*self).into_iter() }
 }

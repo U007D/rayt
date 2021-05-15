@@ -1,4 +1,4 @@
-use crate::{consts::*, Result};
+use crate::{consts::*, Color, Result};
 use conv::ValueFrom;
 use std::{cmp::max, io::Write, num::NonZeroUsize};
 
@@ -20,26 +20,26 @@ impl Ppm {
         })
     }
 
-    pub fn render<ImageWriter: Write, ProgressWriter: Write>(
+    pub fn render<ImageWriter: Write, StatusWriter: Write>(
         &self,
         mut image_writer: ImageWriter,
-        mut progress_writer: ProgressWriter,
+        mut status_writer: StatusWriter,
     ) -> Result<()> {
         self.write_header(&mut image_writer)?;
 
         (0..self.height.get()).try_for_each::<_, Result<()>>(|row| {
-            self.write_progress(&mut progress_writer, row)?;
+            self.write_status(&mut status_writer, row)?;
             self.write_pixel_row(&mut image_writer, row)
         })?;
-        self.flush_progress(&mut progress_writer)
+        self.flush_status(&mut status_writer)
     }
 
     #[allow(clippy::unused_self)]
-    fn flush_progress<ProgressWriter: Write>(
+    fn flush_status<ProgressWriter: Write>(
         &self,
         progress_writer: &mut ProgressWriter,
     ) -> Result<()> {
-        Ok(writeln!(progress_writer)?)
+        Ok(writeln!(progress_writer, "\nDone.")?)
     }
 
     fn write_header<ImageWriter: Write>(&self, image_writer: &mut ImageWriter) -> Result<()> {
@@ -52,22 +52,17 @@ impl Ppm {
         row: usize,
     ) -> Result<()> {
         (0..self.width.get()).try_for_each(|col| {
-            let r = f64::value_from(col)? / self.x_denom;
-            let g = f64::value_from(row)? / self.y_denom;
-            let b = 0.25;
+            let pixel = Color::new(
+                f64::value_from(col)? / self.x_denom,
+                f64::value_from(row)? / self.y_denom,
+                0.25,
+            );
 
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            let ri = (U8_DISTINCT_VALUES_LESS_ONE_ULP * r) as u8;
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            let gi = (U8_DISTINCT_VALUES_LESS_ONE_ULP * g) as u8;
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            let bi = (U8_DISTINCT_VALUES_LESS_ONE_ULP * b) as u8;
-
-            Ok(writeln!(image_writer, "{} {} {}", ri, gi, bi)?)
+            pixel.write_u8_color(image_writer)
         })
     }
 
-    fn write_progress<ProgressWriter: Write>(
+    fn write_status<ProgressWriter: Write>(
         &self,
         progress_writer: &mut ProgressWriter,
         row: usize,

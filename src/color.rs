@@ -1,5 +1,9 @@
-use crate::vec3::Vec3;
-use std::array;
+use crate::{Result, vec3::Vec3};
+use std::{
+    array,
+    io::Write
+};
+use crate::consts::U8_DISTINCT_VALUES_LESS_ONE_ULP;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Color(Vec3);
@@ -16,6 +20,16 @@ impl Color {
 
     #[must_use]
     pub const fn r(&self) -> f64 { self.0.x() }
+
+    pub fn write_u8_color<OutputDevice: Write>(&self, output_device: &mut OutputDevice) -> Result<()> {
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+            let x = (U8_DISTINCT_VALUES_LESS_ONE_ULP * self.r()) as u8;
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+            let y = (U8_DISTINCT_VALUES_LESS_ONE_ULP * self.g()) as u8;
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+            let z = (U8_DISTINCT_VALUES_LESS_ONE_ULP * self.b()) as u8;
+        Ok(writeln!(output_device, "{} {} {}", x, y, z)?)
+    }
 }
 
 impl IntoIterator for Color {
