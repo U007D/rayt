@@ -1,7 +1,7 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
-use assert2::assert;
 use super::*;
+use assert2::assert;
 
 #[test]
 fn self_cross_product_is_a_zero_vector() {
@@ -68,7 +68,7 @@ fn product_of_a_vector_with_a_parallel_vector_opposite_in_direction_is_a_zero_ve
 fn product_is_anticommutative() {
     // Given
     #[allow(clippy::eq_op)]
-        let expected = -Vec3::new(12.0 - 16.0, 8.0 - 6.0, 4.0 - 4.0);
+    let expected = -Vec3::new(12.0 - 16.0, 8.0 - 6.0, 4.0 - 4.0);
     let a = Vec3::new(1.0, 2.0, 3.0);
     let b = Vec3::new(2.0, 4.0, 8.0);
 

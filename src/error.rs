@@ -1,11 +1,9 @@
 mod io;
 
 use crate::consts::msg;
-use std::{
-    ffi::OsString
-};
-use thiserror::Error;
 use conv::PosOverflow;
+use std::ffi::OsString;
+use thiserror::Error;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -17,23 +15,27 @@ pub enum Error {
     IoError(#[from] io::Error),
     #[error("{}: {} {}", msg::ERR_CONVERSION, 0, msg::OVERFLOWED)]
     ConversionError(String),
+    #[error(
+        "{} ({}: {} {} {}: {} {})",
+        msg::ERR_IMAGE_TOO_LARGE,
+        msg::WIDTH,
+        0,
+        msg::X,
+        msg::HEIGHT,
+        1,
+        msg::EXCEEDS_USIZE_MAX
+    )]
+    ImageTooLarge(usize, usize),
 }
 
 impl From<conv::PosOverflow<usize>> for Error {
-    fn from(err: PosOverflow<usize>) -> Self {
-        Self::ConversionError(err.to_string())
-    }
+    fn from(err: PosOverflow<usize>) -> Self { Self::ConversionError(err.to_string()) }
 }
 
 impl From<std::ffi::OsString> for Error {
-    fn from(err: OsString) -> Self {
-        Self::ArgNotConvertibleToUtf8(err)
-    }
+    fn from(err: OsString) -> Self { Self::ArgNotConvertibleToUtf8(err) }
 }
 
 impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self {
-        io::Error(err).into()
-    }
+    fn from(err: std::io::Error) -> Self { io::Error(err).into() }
 }
-

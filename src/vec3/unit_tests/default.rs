@@ -1,7 +1,7 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
-use assert2::assert;
 use super::*;
+use assert2::assert;
 
 #[test]
 fn returns_expected_value() {

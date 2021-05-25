@@ -5,9 +5,8 @@ use crate::consts::*;
 use bool_ext::BoolExt;
 use std::{
     array,
-    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub},
+    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub, SubAssign},
 };
-use std::ops::SubAssign;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vec3 {
@@ -38,9 +37,7 @@ impl Vec3 {
     pub fn length(&self) -> f64 { self.length_squared().sqrt() }
 
     #[must_use]
-    fn length_squared(&self) -> f64 {
-        self.x().mul_add(self.x(), self.y().mul_add(self.y(), self.z() * self.z()))
-    }
+    fn length_squared(&self) -> f64 { self.x().mul_add(self.x(), self.y().mul_add(self.y(), self.z() * self.z())) }
 
     #[must_use]
     pub fn unit_vector(&self) -> Self {
@@ -112,15 +109,15 @@ impl Index<usize> for Vec3 {
 }
 
 impl IntoIterator for Vec3 {
-    type Item = f64;
     type IntoIter = array::IntoIter<f64, 3>;
+    type Item = f64;
 
     fn into_iter(self) -> Self::IntoIter { array::IntoIter::new([self.x(), self.y(), self.z()]) }
 }
 
 impl<'a> IntoIterator for &'a Vec3 {
-    type Item = f64;
     type IntoIter = array::IntoIter<f64, 3>;
+    type Item = f64;
 
     fn into_iter(self) -> Self::IntoIter { (*self).into_iter() }
 }
@@ -136,9 +133,7 @@ impl Mul for Vec3 {
 impl Mul<f64> for Vec3 {
     type Output = Self;
 
-    fn mul(self, rhs: f64) -> Self::Output {
-        Self { x: self.x() * rhs, y: self.y() * rhs, z: self.z() * rhs }
-    }
+    fn mul(self, rhs: f64) -> Self::Output { Self { x: self.x() * rhs, y: self.y() * rhs, z: self.z() * rhs } }
 }
 
 impl MulAssign<f64> for Vec3 {
@@ -170,4 +165,3 @@ impl SubAssign for Vec3 {
         self.z -= rhs.z();
     }
 }
-

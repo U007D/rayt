@@ -1,4 +1,4 @@
-#![feature(const_option)]
+#![feature(const_option, associated_type_defaults)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(
@@ -29,25 +29,30 @@
 // #![warn(clippy::cargo, clippy::restriction, missing_docs, warnings)]
 // #![allow(clippy::implicit_return)]
 
+pub mod adapters;
 mod args;
-mod color;
 pub mod consts;
 pub mod error;
-mod point3;
-mod ppm;
+mod image;
+mod pixel;
+pub mod traits;
 mod vec3;
 
+pub use adapters::encoders;
 pub use args::Args;
-pub use {color::Color, error::{Error, Result}, point3::Point3, ppm::Ppm};
-use crate::consts::IMAGE;
+pub use error::{Error, Result};
+pub use image::Image;
+pub use pixel::Pixel;
 use std::fs::File;
-use std::io::stdout;
 
+use crate::{adapters::encoders::image::Ppm, consts::IMAGE, traits::IEncoder};
+use std::io::BufWriter;
 
-#[allow(clippy::missing_const_for_fn, clippy::needless_pass_by_value)] //remove when `lib_main` impl'ed
 pub fn lib_main(args: Args) -> Result<()> {
-    let output_file = File::create(args.output_image)?;
-    let stdout = stdout();
-    let img = Ppm::new(IMAGE.width, IMAGE.height)?;
-    img.render(output_file, stdout)
+    let mut output_device = BufWriter::new(File::create(args.output_image)?);
+    let image = Image::new(IMAGE.width, IMAGE.height)?;
+    dbg!("before encode()");
+    Ppm::encode(&mut output_device, &image)?;
+    dbg!("after encode()");
+    Ok(())
 }

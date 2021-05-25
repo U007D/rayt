@@ -29,6 +29,4 @@
 use lib::{self, error::Result, lib_main, Args};
 use structopt::StructOpt;
 
-fn main() -> Result<()> {
-    lib_main(Args::from_args())
-}
+fn main() -> Result<()> { lib_main(Args::from_args()) }
