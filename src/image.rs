@@ -1,6 +1,9 @@
 use crate::{traits::IImage, Error, Pixel, Result};
 use bool_ext::BoolExt;
-use std::num::NonZeroUsize;
+use std::{
+    num::NonZeroUsize,
+    slice::{Chunks, ChunksMut},
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Image {
@@ -24,55 +27,63 @@ impl Image {
             .into_boxed_slice(),
         })
     }
-
-    #[must_use]
-    pub const fn iter(&self) -> Iter<'_> { Iter { pixels: &self.pixels, index: 0, width: self.width } }
 }
 
 impl IImage for Image {
+    type Iter<'a> = Iter<'a>;
+    type IterMut<'a> = IterMut<'a>;
     type Pixel = Pixel;
 
+    #[must_use]
     fn height(&self) -> NonZeroUsize { self.height }
 
     #[must_use]
-    #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
-    fn row_ref(&self, row: usize) -> Option<&[Self::Pixel]> {
-        (row < self.height.get()).some_with(move || {
-            let start = row * self.width().get();
-            let end = start + self.width().get();
-            &self.pixels[start..end]
-        })
+    fn iter(&self) -> Self::Iter<'_> { Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() } }
+
+    #[must_use]
+    fn iter_mut(&mut self) -> IterMut<'_> {
+        IterMut { pixels: self.pixels.chunks_mut(self.width.get()), len: self.height() }
     }
 
     #[must_use]
-    #[allow(clippy::indexing_slicing, clippy::integer_arithmetic)]
-    fn row_mut(&mut self, row: usize) -> Option<&mut [Self::Pixel]> {
-        (row < self.height.get()).some_with(move || {
-            let start = row * self.width().get();
-            let end = start + self.width().get();
-            &mut self.pixels[start..end]
-        })
-    }
-
     fn width(&self) -> NonZeroUsize { self.width }
 }
 
 #[derive(Debug)]
 pub struct Iter<'a> {
-    pixels: &'a [Pixel],
-    index:  usize,
-    width:  NonZeroUsize,
+    pixels: Chunks<'a, Pixel>,
+    len:    NonZeroUsize,
 }
+
+impl ExactSizeIterator for Iter<'_> {}
 
 impl<'a> Iterator for Iter<'a> {
     type Item = &'a [Pixel];
 
-    // `Iter`'s fields are derived from an instantiated `Image`, so we can be sure that index * width will not overflow.
     #[allow(clippy::integer_arithmetic)]
-    fn next(&mut self) -> Option<Self::Item> {
-        let width = self.width.get();
-        let start = self.index * width;
-        self.index += 1;
-        self.pixels.get(start..start + width)
+    fn next(&mut self) -> Option<Self::Item> { self.pixels.next() }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.len.get();
+        (len, Some(len))
+    }
+}
+
+#[derive(Debug)]
+pub struct IterMut<'a> {
+    pixels: ChunksMut<'a, Pixel>,
+    len:    NonZeroUsize,
+}
+
+impl ExactSizeIterator for IterMut<'_> {}
+
+impl<'a> Iterator for IterMut<'a> {
+    type Item = &'a mut [Pixel];
+
+    fn next(&mut self) -> Option<Self::Item> { self.pixels.next() }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.len.get();
+        (len, Some(len))
     }
 }

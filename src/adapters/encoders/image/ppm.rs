@@ -5,7 +5,11 @@ use crate::{
     Result,
 };
 use conv::ValueFrom;
-use std::io::{stdout, Write};
+use std::{
+    io::{stdout, Write},
+    iter::once_with,
+    os::macos::raw::stat,
+};
 
 #[derive(Debug)]
 pub struct Ppm;
@@ -21,11 +25,15 @@ impl Ppm {
         Ok(writeln!(output_device, "P3\n{} {}\n255", image.width().get(), image.height().get())?)
     }
 
-    fn write_pixel_row<TOutputDevice, TPixel>(output_device: &mut TOutputDevice, pixels: &[TPixel]) -> Result<()>
+    fn write_pixel_row<'p, TOutputDevice, TPixel, TRow>(
+        output_device: &mut TOutputDevice,
+        mut pixels: TRow,
+    ) -> Result<()>
     where
         TOutputDevice: Write,
-        TPixel: IRgbPixel, {
-        pixels.iter().try_for_each(|pixel| U8::encode(output_device, pixel))
+        TPixel: IRgbPixel + 'p,
+        TRow: Iterator<Item = &'p TPixel>, {
+        pixels.try_for_each(|pixel| U8::encode(output_device, pixel))
     }
 
     fn write_status<TStatusDevice, TImage>(
@@ -52,18 +60,22 @@ where
         Self::write_header(output_device, image)?;
 
         let mut status_device = stdout();
-        (0..image.height().get()).try_for_each(|row| {
-            dbg!(row);
+
+        image.iter().enumerate().try_for_each(|(row, pixels)| {
             Self::write_status(&mut status_device, image, row)?;
-            let pixels = image.row_ref(row).unwrap_or_else(|| {
-                unreachable!(format!(
-                    "{} ({:?}).",
-                    msg::INTERNAL_ERR_EXCEEDED_IMAGE_HEIGHT_WHILE_ITERATING,
-                    image.height()
-                ))
-            });
-            Self::write_pixel_row(output_device, pixels)
+            Self::write_pixel_row(output_device, pixels.iter())
         })?;
-        Ok(output_device.flush()?)
+        // (0..image.height().get()).try_for_each(|row| {
+        //     Self::write_status(&mut status_device, image, row)?;
+        //     let pixels = image.row_ref(row).unwrap_or_else(|| {
+        //         unreachable!(format!(
+        //             "{} ({:?}).",
+        //             msg::INTERNAL_ERR_EXCEEDED_IMAGE_HEIGHT_WHILE_ITERATING,
+        //             image.height()
+        //         ))
+        //     });
+        //     Self::write_pixel_row(output_device, pixels)
+        // })?;
+        once_with(|| output_device.flush()).chain(once_with(|| status_device.flush())).collect()?
     }
 }

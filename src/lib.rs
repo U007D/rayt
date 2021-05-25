@@ -1,4 +1,4 @@
-#![feature(const_option, associated_type_defaults)]
+#![feature(const_option, associated_type_defaults, generic_associated_types)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(

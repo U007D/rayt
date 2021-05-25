@@ -1,16 +1,19 @@
+use crate::traits::IRgbPixel;
 use std::num::NonZeroUsize;
 
 pub trait IImage {
-    type Pixel;
+    type Pixel: IRgbPixel;
+    type Iter<'a>: Iterator;
+    type IterMut<'a>: Iterator;
 
     #[must_use]
     fn height(&self) -> NonZeroUsize;
 
     #[must_use]
-    fn row_ref(&self, row: usize) -> Option<&[Self::Pixel]>;
+    fn iter(&self) -> Self::Iter<'_>;
 
     #[must_use]
-    fn row_mut(&mut self, row: usize) -> Option<&mut [Self::Pixel]>;
+    fn iter_mut(&mut self) -> Self::IterMut<'_>;
 
     #[must_use]
     fn width(&self) -> NonZeroUsize;
