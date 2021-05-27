@@ -7,8 +7,6 @@ use crate::{
 use conv::ValueFrom;
 use std::{
     io::{stdout, Write},
-    iter::once_with,
-    os::macos::raw::stat,
 };
 
 #[derive(Debug)]
@@ -33,7 +31,7 @@ impl Ppm {
         TOutputDevice: Write,
         TPixel: IRgbPixel + 'p,
         TRow: Iterator<Item = &'p TPixel>, {
-        pixels.try_for_each(|pixel| U8::encode(output_device, pixel))
+        pixels.try_for_each(|pixel| U8::encode(pixel, output_device))
     }
 
     fn write_status<TStatusDevice, TImage>(
@@ -49,12 +47,12 @@ impl Ppm {
     }
 }
 
-impl<T> IEncoder<T> for Ppm
+impl<TImage> IEncoder<TImage> for Ppm
 where
-    T: IImage,
-    <T as IImage>::Pixel: IRgbPixel,
+    TImage: IImage,
+    <TImage as IImage>::Pixel: IRgbPixel,
 {
-    fn encode<TOutputDevice>(output_device: &mut TOutputDevice, image: &T) -> Result<()>
+    fn encode<TOutputDevice>(image: &TImage, output_device: &mut TOutputDevice) -> Result<()>
     where
         TOutputDevice: Write, {
         Self::write_header(output_device, image)?;
@@ -65,17 +63,8 @@ where
             Self::write_status(&mut status_device, image, row)?;
             Self::write_pixel_row(output_device, pixels.iter())
         })?;
-        // (0..image.height().get()).try_for_each(|row| {
-        //     Self::write_status(&mut status_device, image, row)?;
-        //     let pixels = image.row_ref(row).unwrap_or_else(|| {
-        //         unreachable!(format!(
-        //             "{} ({:?}).",
-        //             msg::INTERNAL_ERR_EXCEEDED_IMAGE_HEIGHT_WHILE_ITERATING,
-        //             image.height()
-        //         ))
-        //     });
-        //     Self::write_pixel_row(output_device, pixels)
-        // })?;
-        once_with(|| output_device.flush()).chain(once_with(|| status_device.flush())).collect()?
+        output_device.flush()?;
+        status_device.flush()?;
+        Ok(())
     }
 }

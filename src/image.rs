@@ -1,5 +1,4 @@
 use crate::{traits::IImage, Error, Pixel, Result};
-use bool_ext::BoolExt;
 use std::{
     num::NonZeroUsize,
     slice::{Chunks, ChunksMut},
@@ -30,21 +29,22 @@ impl Image {
 }
 
 impl IImage for Image {
-    type Iter<'a> = Iter<'a>;
-    type IterMut<'a> = IterMut<'a>;
     type Pixel = Pixel;
+    type IterRef<'a> = Iter<'a>;
+    type IterMut<'a> = IterMut<'a>;
 
     #[must_use]
     fn height(&self) -> NonZeroUsize { self.height }
 
     #[must_use]
-    fn iter(&self) -> Self::Iter<'_> { Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() } }
+    fn iter(&self) -> Self::IterRef<'_> { Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() } }
 
     #[must_use]
     fn iter_mut(&mut self) -> IterMut<'_> {
-        IterMut { pixels: self.pixels.chunks_mut(self.width.get()), len: self.height() }
+        let height = self.height();
+        IterMut { pixels: self.pixels.chunks_mut(self.width.get()), len: height }
     }
-
+    
     #[must_use]
     fn width(&self) -> NonZeroUsize { self.width }
 }

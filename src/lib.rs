@@ -16,7 +16,8 @@
     clippy::module_name_repetitions,
     clippy::non_ascii_literal,
     clippy::pub_enum_variant_names,
-    clippy::wildcard_imports
+    clippy::wildcard_imports,
+    incomplete_features,
 )]
 // To use the `unsafe` keyword, do not remove the `unsafe_code` attribute entirely.
 // Instead, change it to `#![allow(unsafe_code)]` or preferably `#![deny(unsafe_code)]` + opt-in
@@ -51,8 +52,6 @@ use std::io::BufWriter;
 pub fn lib_main(args: Args) -> Result<()> {
     let mut output_device = BufWriter::new(File::create(args.output_image)?);
     let image = Image::new(IMAGE.width, IMAGE.height)?;
-    dbg!("before encode()");
-    Ppm::encode(&mut output_device, &image)?;
-    dbg!("after encode()");
+    Ppm::encode(&image, &mut output_device)?;
     Ok(())
 }

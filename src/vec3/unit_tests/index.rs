@@ -1,7 +1,9 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
+mod catch_unwind_silent;
 
 use super::*;
 use assert2::assert;
+use catch_unwind_silent::catch_unwind_silent;
 
 #[allow(clippy::float_cmp, clippy::indexing_slicing)]
 #[test]
@@ -30,7 +32,7 @@ fn out_of_bounds_index_panics() {
     let a = Vec3::new(11.0, 22.0, 33.0);
 
     // When
-    let result = std::panic::catch_unwind(|| a[99]);
+    let result = catch_unwind_silent(|| a[99]);
 
     // Then
     assert!(result.is_err(), "{:?}", result);
