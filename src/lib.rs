@@ -1,4 +1,4 @@
-#![feature(const_option, associated_type_defaults, generic_associated_types)]
+#![feature(associated_type_defaults, backtrace, const_option, generic_associated_types)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(
@@ -17,7 +17,7 @@
     clippy::non_ascii_literal,
     clippy::pub_enum_variant_names,
     clippy::wildcard_imports,
-    incomplete_features,
+    incomplete_features
 )]
 // To use the `unsafe` keyword, do not remove the `unsafe_code` attribute entirely.
 // Instead, change it to `#![allow(unsafe_code)]` or preferably `#![deny(unsafe_code)]` + opt-in
@@ -44,14 +44,38 @@ pub use args::Args;
 pub use error::{Error, Result};
 pub use image::Image;
 pub use pixel::Pixel;
-use std::fs::File;
 
-use crate::{adapters::encoders::image::Ppm, consts::IMAGE, traits::IEncoder};
-use std::io::BufWriter;
+use crate::{
+    adapters::encoders::image::Ppm,
+    consts::IMAGE,
+    traits::{IEncoder, IImage, IPixel, IPixelExt, IRgbPixel},
+};
+use std::{cmp::max, fs::File, io::BufWriter};
 
 pub fn lib_main(args: Args) -> Result<()> {
-    let mut output_device = BufWriter::new(File::create(args.output_image)?);
-    let image = Image::new(IMAGE.width, IMAGE.height)?;
+    let mut output_device = BufWriter::new(File::create(args.output_image_name)?);
+    let mut image = Image::new(IMAGE.width, IMAGE.height)?;
+    generate_rainbow(&mut image)?;
     Ppm::encode(&image, &mut output_device)?;
     Ok(())
+}
+
+fn generate_rainbow<TImage>(image: &mut TImage) -> Result<()>
+where
+    TImage: IImage,
+    <TImage as IImage>::Pixel: IRgbPixel + IPixelExt, {
+    let width = image.width().get();
+    let height = image.height().get();
+    image.iter_mut().enumerate().try_for_each(|(row, pixels)| {
+        pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
+            let r = pixel.try_value_from_usize(col)? / pixel.try_value_from_usize(max(width.saturating_sub(1), 1))?
+                * <<TImage as IImage>::Pixel as IPixel>::MAX;
+            let g = pixel.try_value_from_usize(row)? / pixel.try_value_from_usize(max(height.saturating_sub(1), 1))?
+                * <<TImage as IImage>::Pixel as IPixel>::MAX;
+            let b = pixel.try_value_from_f64(0.25)?;
+
+            pixel.set(r, g, b)?;
+            Ok::<_, Error>(())
+        })
+    })
 }

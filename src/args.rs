@@ -11,5 +11,5 @@ mod unit_tests;
 #[structopt(rename_all = "kebab-case")]
 pub struct Args {
     /// Name of file to write output image to.  NOTE: Clobbers file silently if it already exists.
-    pub output_image: PathBuf,
+    pub output_image_name: PathBuf,
 }

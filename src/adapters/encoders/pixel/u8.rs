@@ -7,11 +7,11 @@ use std::io::Write;
 #[derive(Debug)]
 pub struct U8;
 
-impl<T> IEncoder<T> for U8
+impl<TPixel> IEncoder<TPixel> for U8
 where
-    T: IRgbPixel,
+    TPixel: IRgbPixel,
 {
-    fn encode<TOutputDevice: Write>(source: &T, output_device: &mut TOutputDevice) -> Result<()> {
+    fn encode<TOutputDevice: Write>(source: &TPixel, output_device: &mut TOutputDevice) -> Result<()> {
         let (r, g, b) = (*source).into();
         Ok(writeln!(output_device, "{} {} {}", r, g, b)?)
     }
