@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod unit_tests;
+
 use crate::{
     consts::*,
     error::Error,
@@ -97,11 +100,5 @@ impl From<Pixel> for (u8, u8, u8) {
             (pixel.0.y() * DISTINCT_U8_VALUES) as u8,
             (pixel.0.z() * DISTINCT_U8_VALUES) as u8,
         )
-    }
-}
-
-impl<'a> From<&'a Pixel> for (u8, u8, u8) {
-    fn from(pixel: &'a Pixel) -> Self {
-        (*pixel).into()
     }
 }
