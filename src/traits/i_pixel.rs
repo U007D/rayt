@@ -2,7 +2,7 @@ use crate::Result;
 use num_traits::Num;
 
 pub trait IPixel: Copy + Into<(u8, u8, u8)> {
-    type Value: Num;
+    type Value: Num + Copy;
     const MAX: Self::Value;
     const MIN: Self::Value;
 }

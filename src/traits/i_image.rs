@@ -1,10 +1,10 @@
-use crate::traits::IRgbPixel;
+use crate::traits::IPixel;
 use std::num::NonZeroUsize;
 
-pub trait IImage {
-    type Pixel: IRgbPixel;
-    type IterRef<'a>: Iterator<Item = &'a [Self::Pixel]> where <Self as IImage>::Pixel: 'a;
+pub trait IImage: AsRef<[<Self as IImage>::Pixel]> + AsMut<[<Self as IImage>::Pixel]> {
+    type Pixel: IPixel;
     type IterMut<'a>: Iterator<Item = &'a mut [Self::Pixel]> where <Self as IImage>::Pixel: 'a;
+    type IterRef<'a>: Iterator<Item = &'a [Self::Pixel]> where <Self as IImage>::Pixel: 'a;
 
     #[must_use]
     fn height(&self) -> NonZeroUsize;

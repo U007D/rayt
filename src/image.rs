@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod unit_tests;
+
 use crate::{traits::IImage, Error, Pixel, Result};
 use std::{
     num::NonZeroUsize,
@@ -28,10 +31,18 @@ impl Image {
     }
 }
 
+impl AsMut<[<Self as IImage>::Pixel]> for Image {
+    fn as_mut(&mut self) -> &mut [Pixel] { self.pixels.as_mut() }
+}
+
+impl AsRef<[<Self as IImage>::Pixel]> for Image {
+    fn as_ref(&self) -> &[Pixel] { self.pixels.as_ref() }
+}
+
 impl IImage for Image {
     type Pixel = Pixel;
-    type IterRef<'a> = Iter<'a>;
     type IterMut<'a> = IterMut<'a>;
+    type IterRef<'a> = Iter<'a>;
 
     #[must_use]
     fn height(&self) -> NonZeroUsize { self.height }
@@ -44,7 +55,7 @@ impl IImage for Image {
         let height = self.height();
         IterMut { pixels: self.pixels.chunks_mut(self.width.get()), len: height }
     }
-    
+
     #[must_use]
     fn width(&self) -> NonZeroUsize { self.width }
 }
