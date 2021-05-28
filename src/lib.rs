@@ -68,7 +68,7 @@ where
     let height = image.height().get();
     let value_max = <<TImage as IImage>::Pixel as IPixel>::MAX;
 
-    image.iter_mut().enumerate().try_for_each(|(row, pixels)| {
+    image.row_iter_mut().enumerate().try_for_each(|(row, pixels)| {
         pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
             let r = pixel.try_value_from_usize(col)? / pixel.try_value_from_usize(max(width.saturating_sub(1), 1))?
                 * value_max;

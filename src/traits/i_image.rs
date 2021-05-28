@@ -10,10 +10,10 @@ pub trait IImage: AsRef<[<Self as IImage>::Pixel]> + AsMut<[<Self as IImage>::Pi
     fn height(&self) -> NonZeroUsize;
 
     #[must_use]
-    fn iter(&self) -> Self::IterRef<'_>;
+    fn row_iter(&self) -> Self::IterRef<'_>;
 
     #[must_use]
-    fn iter_mut(&mut self) -> Self::IterMut<'_>;
+    fn row_iter_mut(&mut self) -> Self::IterMut<'_>;
 
     #[must_use]
     fn width(&self) -> NonZeroUsize;

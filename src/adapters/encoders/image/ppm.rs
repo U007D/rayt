@@ -59,7 +59,7 @@ where
 
         let mut status_device = stdout();
 
-        image.iter().enumerate().try_for_each(|(row, pixels)| {
+        image.row_iter().enumerate().try_for_each(|(row, pixels)| {
             Self::write_status(&mut status_device, image, row)?;
             Self::write_pixel_row(output_device, pixels.iter())
         })?;
