@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod unit_tests;
+
 use crate::{
     adapters::encoders::pixel::U8,
     consts::msg,
