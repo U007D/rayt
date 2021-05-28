@@ -14,7 +14,9 @@ impl<TPixel> IEncoder<TPixel> for U8
 where
     TPixel: IRgbPixel,
 {
-    fn encode<TOutputDevice: Write>(source: &TPixel, output_device: &mut TOutputDevice) -> Result<()> {
+    fn encode<TOutputDevice>(source: &TPixel, output_device: &mut TOutputDevice) -> Result<()>
+    where
+        TOutputDevice: Write, {
         let (r, g, b) = (*source).into();
         Ok(writeln!(output_device, "{} {} {}", r, g, b)?)
     }

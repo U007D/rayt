@@ -1,31 +1,25 @@
-#[cfg(test)]
-mod unit_tests;
+use std::array;
+
+use bool_ext::BoolExt;
+use conv::ValueFrom;
 
 use crate::{
     consts::*,
     error::Error,
-    traits::{
-        IRgbPixel,
-        IPixel,
-        IPixelExt
-    },
-    vec3::Vec3,
+    primitives::vec3::Vec3,
+    traits::{IPixel, IPixelExt, IRgbPixel},
     Result,
 };
-use bool_ext::BoolExt;
-use std::array;
-use conv::ValueFrom;
+
+#[cfg(test)]
+mod unit_tests;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Pixel(Vec3);
 
 impl Pixel {
     #[allow(clippy::needless_pass_by_value)]
-    pub fn new(
-        r: <Self as IPixel>::Value,
-        g: <Self as IPixel>::Value,
-        b: <Self as IPixel>::Value,
-    ) -> Result<Self> {
+    pub fn new(r: <Self as IPixel>::Value, g: <Self as IPixel>::Value, b: <Self as IPixel>::Value) -> Result<Self> {
         let (r, g, b) = Self::validate_triplet(r, g, b)?;
         Ok(Self(Vec3::new(r, g, b)))
     }
@@ -53,8 +47,8 @@ impl Pixel {
 }
 
 impl IntoIterator for Pixel {
-    type Item = <Self as IPixel>::Value;
     type IntoIter = array::IntoIter<<Self as IPixel>::Value, 3>;
+    type Item = <Self as IPixel>::Value;
 
     fn into_iter(self) -> Self::IntoIter { self.0.into_iter() }
 }
@@ -72,9 +66,7 @@ impl IPixelExt for Pixel {
     }
 
     #[allow(clippy::useless_conversion)]
-    fn try_value_from_f64(&self, value: f64) -> Result<Self::Value> {
-        Ok(value.into())
-    }
+    fn try_value_from_f64(&self, value: f64) -> Result<Self::Value> { Ok(value.into()) }
 }
 
 impl IRgbPixel for Pixel {
@@ -94,7 +86,7 @@ impl IRgbPixel for Pixel {
 
 impl From<Pixel> for (u8, u8, u8) {
     fn from(pixel: Pixel) -> Self {
-        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
+            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
         (
             (pixel.0.x() * DISTINCT_U8_VALUES) as u8,
             (pixel.0.y() * DISTINCT_U8_VALUES) as u8,

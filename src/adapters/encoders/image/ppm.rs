@@ -4,13 +4,11 @@ mod unit_tests;
 use crate::{
     adapters::encoders::pixel::U8,
     consts::msg,
-    traits::{IEncoder, IImage, IRgbPixel},
+    traits::{IEncoder, IEncoderProgress, IImage, IRgbPixel},
     Result,
 };
 use conv::ValueFrom;
-use std::{
-    io::{stdout, Write},
-};
+use std::io::{sink, Write};
 
 #[derive(Debug)]
 pub struct Ppm;
@@ -55,15 +53,30 @@ where
     TImage: IImage,
     <TImage as IImage>::Pixel: IRgbPixel,
 {
-    fn encode<TOutputDevice>(image: &TImage, output_device: &mut TOutputDevice) -> Result<()>
+    fn encode<TOutputDevice>(source: &TImage, output_device: &mut TOutputDevice) -> Result<()>
     where
         TOutputDevice: Write, {
+        <Self as IEncoderProgress<TImage>>::encode(source, output_device, &mut sink())
+    }
+}
+
+impl<TImage> IEncoderProgress<TImage> for Ppm
+where
+    TImage: IImage,
+    <TImage as IImage>::Pixel: IRgbPixel,
+{
+    fn encode<TOutputDevice, TStatusDevice>(
+        image: &TImage,
+        output_device: &mut TOutputDevice,
+        status_device: &mut TStatusDevice,
+    ) -> Result<()>
+    where
+        TOutputDevice: Write,
+        TStatusDevice: Write, {
         Self::write_header(output_device, image)?;
 
-        let mut status_device = stdout();
-
         image.row_iter().enumerate().try_for_each(|(row, pixels)| {
-            Self::write_status(&mut status_device, image, row)?;
+            Self::write_status(status_device, image, row)?;
             Self::write_pixel_row(output_device, pixels.iter())
         })?;
         output_device.flush()?;

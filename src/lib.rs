@@ -43,20 +43,24 @@ pub use adapters::encoders;
 pub use args::Args;
 pub use error::{Error, Result};
 pub use image::Image;
-pub use pixel::Pixel;
+use std::{
+    cmp::max,
+    fs::File,
+    io::{stdout, BufWriter},
+};
 
 use crate::{
     adapters::encoders::image::Ppm,
     consts::IMAGE,
-    traits::{IEncoder, IImage, IPixel, IPixelExt, IRgbPixel},
+    traits::{IEncoderProgress, IImage, IPixel, IPixelExt, IRgbPixel},
 };
-use std::{cmp::max, fs::File, io::BufWriter};
 
 pub fn lib_main(args: Args) -> Result<()> {
     let mut output_device = BufWriter::new(File::create(args.output_image_name)?);
+    let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
     generate_rainbow(&mut image)?;
-    Ppm::encode(&image, &mut output_device)?;
+    Ppm::encode(&image, &mut output_device, &mut status_device)?;
     Ok(())
 }
 
