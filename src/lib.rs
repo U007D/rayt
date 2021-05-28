@@ -35,14 +35,14 @@ mod args;
 pub mod consts;
 pub mod error;
 mod image;
-mod pixel;
+mod primitives;
 pub mod traits;
-mod vec3;
 
 pub use adapters::encoders;
 pub use args::Args;
 pub use error::{Error, Result};
 pub use image::Image;
+pub use primitives::{dir3::Dir3, pixel::Pixel, point3::Point3};
 use std::{
     cmp::max,
     fs::File,
