@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod unit_tests;
+
 use crate::{
     traits::{IEncoder, IRgbPixel},
     Result,
