@@ -3,5 +3,6 @@
 mod as_mut;
 mod as_ref;
 mod i_image;
+mod new;
 
 use super::*;
