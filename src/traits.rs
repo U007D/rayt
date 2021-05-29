@@ -1,4 +1,9 @@
 mod i_encoder;
 mod i_image;
 mod i_pixel;
-pub use {i_encoder::{IEncoder, IEncoderProgress}, i_image::IImage, i_pixel::{IPixel, IPixelExt, IRgbPixel}};
+mod i_triplet;
+
+pub use i_encoder::{IEncoder, IEncoderProgress};
+pub use i_image::IImage;
+pub use i_pixel::{IPixel, IPixelExt, IRgbPixel};
+pub use i_triplet::ITriplet;

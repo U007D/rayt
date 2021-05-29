@@ -1,8 +1,5 @@
 use std::array;
-
 use bool_ext::BoolExt;
-use conv::ValueFrom;
-
 use crate::{
     consts::*,
     error::Error,
@@ -10,6 +7,8 @@ use crate::{
     traits::{IPixel, IPixelExt, IRgbPixel},
     Result,
 };
+use crate::traits::ITriplet;
+use conv::ValueFrom;
 
 #[cfg(test)]
 mod unit_tests;
@@ -54,7 +53,7 @@ impl IntoIterator for Pixel {
 }
 
 impl IPixel for Pixel {
-    type Value = f64;
+    type Value = <Vec3 as ITriplet>::Value;
 
     const MAX: Self::Value = 1.0 - f64::EPSILON;
     const MIN: Self::Value = 0.0;

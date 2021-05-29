@@ -1,5 +1,5 @@
 #![feature(associated_type_defaults, backtrace, const_option, generic_associated_types)]
-#![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
+#![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::unreadable_literal, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(
     clippy::pedantic,
@@ -42,7 +42,7 @@ pub use adapters::encoders;
 pub use args::Args;
 pub use error::{Error, Result};
 pub use image::Image;
-pub use primitives::{dir3::Dir3, pixel::Pixel, point3::Point3};
+pub use primitives::{direction3::Direction3, pixel::Pixel, point3::Point3};
 use std::{
     cmp::max,
     fs::File,

@@ -1,14 +1,17 @@
 #[cfg(test)]
 mod unit_tests;
 
-use crate::consts::*;
+use crate::{consts::*, traits::ITriplet};
 use bool_ext::BoolExt;
+use derive_more::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 use std::{
     array,
-    ops::{Add, AddAssign, Div, DivAssign, Index, Mul, MulAssign, Neg, Sub, SubAssign},
+    ops::{Index, Mul},
 };
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(
+    Add, AddAssign, Clone, Copy, Debug, Default, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
+)]
 pub struct Vec3 {
     x: f64,
     y: f64,
@@ -49,49 +52,11 @@ impl Vec3 {
             },
         )
     }
-
-    #[must_use]
-    pub const fn x(&self) -> f64 { self.x }
-
-    #[must_use]
-    pub const fn y(&self) -> f64 { self.y }
-
-    #[must_use]
-    pub const fn z(&self) -> f64 { self.z }
 }
 
-impl Add for Vec3 {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Self { x: self.x() + rhs.x(), y: self.y() + rhs.y(), z: self.z() + rhs.z() }
-    }
-}
-
-impl AddAssign for Vec3 {
-    fn add_assign(&mut self, rhs: Self) {
-        self.x += rhs.x();
-        self.y += rhs.y();
-        self.z += rhs.z();
-    }
-}
-
-impl Default for Vec3 {
-    fn default() -> Self { Self::new(f64::default(), f64::default(), f64::default()) }
-}
-
-impl Div<f64> for Vec3 {
-    type Output = Self;
-
-    fn div(self, rhs: f64) -> Self::Output { self * (1.0 / rhs) }
-}
-
-impl DivAssign<f64> for Vec3 {
-    fn div_assign(&mut self, rhs: f64) {
-        let rhs_inv = 1.0 / rhs;
-        self.x *= rhs_inv;
-        self.y *= rhs_inv;
-        self.z *= rhs_inv;
+impl From<(<Self as ITriplet>::Value,<Self as ITriplet>::Value,<Self as ITriplet>::Value)> for Vec3 {
+    fn from(tuple: (<Self as ITriplet>::Value,<Self as ITriplet>::Value,<Self as ITriplet>::Value)) -> Self {
+        Self::new(tuple.0, tuple.1, tuple.2)
     }
 }
 
@@ -122,46 +87,28 @@ impl<'a> IntoIterator for &'a Vec3 {
     fn into_iter(self) -> Self::IntoIter { (*self).into_iter() }
 }
 
-impl Mul for Vec3 {
-    type Output = Self;
+impl Mul<Vec3> for <Vec3 as ITriplet>::Value {
+    type Output = Vec3;
 
-    fn mul(self, rhs: Self) -> Self::Output {
-        Self { x: self.x() * rhs.x(), y: self.y() * rhs.y(), z: self.z() * rhs.z() }
-    }
+    fn mul(self, rhs: Vec3) -> Self::Output { rhs * self }
 }
 
-impl Mul<f64> for Vec3 {
-    type Output = Self;
+impl ITriplet for Vec3 {
+    type Value = f64;
 
-    fn mul(self, rhs: f64) -> Self::Output { Self { x: self.x() * rhs, y: self.y() * rhs, z: self.z() * rhs } }
-}
+    #[inline]
+    #[must_use]
+    fn x(&self) -> f64 { self.x }
 
-impl MulAssign<f64> for Vec3 {
-    fn mul_assign(&mut self, rhs: f64) {
-        self.x *= rhs;
-        self.y *= rhs;
-        self.z *= rhs;
-    }
-}
+    #[inline]
+    #[must_use]
+    fn xyz(&self) -> (Self::Value, Self::Value, Self::Value) { (self.x(), self.y(), self.z()) }
 
-impl Neg for Vec3 {
-    type Output = Self;
+    #[inline]
+    #[must_use]
+    fn y(&self) -> f64 { self.y }
 
-    fn neg(self) -> Self::Output { Self { x: -self.x(), y: -self.y(), z: -self.z() } }
-}
-
-impl Sub for Vec3 {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Self { x: self.x() - rhs.x(), y: self.y() - rhs.y(), z: self.z() - rhs.z() }
-    }
-}
-
-impl SubAssign for Vec3 {
-    fn sub_assign(&mut self, rhs: Self) {
-        self.x -= rhs.x();
-        self.y -= rhs.y();
-        self.z -= rhs.z();
-    }
+    #[inline]
+    #[must_use]
+    fn z(&self) -> f64 { self.z }
 }
