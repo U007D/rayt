@@ -1,19 +1,21 @@
-use std::array;
-use bool_ext::BoolExt;
+#[cfg(test)]
+mod unit_tests;
+
 use crate::{
     consts::*,
     error::Error,
     primitives::vec3::Vec3,
-    traits::{IPixel, IPixelExt, IRgbPixel},
+    traits::{IPixel, IPixelExt, IRgbPixel, ITriplet},
     Result,
 };
-use crate::traits::ITriplet;
+use bool_ext::BoolExt;
 use conv::ValueFrom;
+use derive_more::{Add, AddAssign, Deref, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::{array, ops::Mul};
 
-#[cfg(test)]
-mod unit_tests;
-
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(
+    Add, AddAssign, Clone, Copy, Debug, Default, Deref, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
+)]
 pub struct Pixel(Vec3);
 
 impl Pixel {
@@ -45,6 +47,17 @@ impl Pixel {
     }
 }
 
+impl From<Pixel> for (u8, u8, u8) {
+    fn from(pixel: Pixel) -> Self {
+            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
+        (
+            (pixel.0.x() * DISTINCT_U8_VALUES) as u8,
+            (pixel.0.y() * DISTINCT_U8_VALUES) as u8,
+            (pixel.0.z() * DISTINCT_U8_VALUES) as u8,
+        )
+    }
+}
+
 impl IntoIterator for Pixel {
     type IntoIter = array::IntoIter<<Self as IPixel>::Value, 3>;
     type Item = <Self as IPixel>::Value;
@@ -60,6 +73,8 @@ impl IPixel for Pixel {
 }
 
 impl IPixelExt for Pixel {
+    fn max() -> Self { Self(Vec3::new(<Self as IPixel>::MAX, <Self as IPixel>::MAX, <Self as IPixel>::MAX)) }
+
     fn try_value_from_usize(&self, value: usize) -> Result<Self::Value> {
         Ok(<Self as IPixel>::Value::value_from(value)?)
     }
@@ -83,13 +98,10 @@ impl IRgbPixel for Pixel {
     }
 }
 
-impl From<Pixel> for (u8, u8, u8) {
-    fn from(pixel: Pixel) -> Self {
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
-        (
-            (pixel.0.x() * DISTINCT_U8_VALUES) as u8,
-            (pixel.0.y() * DISTINCT_U8_VALUES) as u8,
-            (pixel.0.z() * DISTINCT_U8_VALUES) as u8,
-        )
+impl Mul<Pixel> for <Pixel as IPixel>::Value {
+    type Output = Pixel;
+
+    fn mul(self, rhs: Pixel) -> Self::Output {
+        rhs * self
     }
 }

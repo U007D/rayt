@@ -8,6 +8,8 @@ pub trait IPixel: Copy + Into<(u8, u8, u8)> {
 }
 
 pub trait IPixelExt: IPixel {
+    #[must_use]
+    fn max() -> Self;
     fn try_value_from_usize(&self, value: usize) -> Result<Self::Value>;
     fn try_value_from_f64(&self, value: f64) -> Result<Self::Value>;
 }
@@ -20,5 +22,5 @@ pub trait IRgbPixel: IPixel {
     #[must_use]
     fn r(&self) -> Self::Value;
     fn set(&mut self, r: Self::Value, g: Self::Value, b: Self::Value) -> Result<&mut Self>;
+    fn set_pixel(&mut self, pixel: Self) -> &mut Self { *self = pixel; self }
 }
-

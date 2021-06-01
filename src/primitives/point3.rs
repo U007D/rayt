@@ -1,6 +1,6 @@
 use crate::{primitives::vec3::Vec3, traits::ITriplet, Direction3};
 use derive_more::{Add, AddAssign, Deref, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
 #[derive(
     Add, AddAssign, Clone, Copy, Debug, Default, Deref, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
@@ -52,3 +52,10 @@ impl Mul<Point3> for <Point3 as ITriplet>::Value {
 
     fn mul(self, rhs: Point3) -> Self::Output { rhs * self }
 }
+
+impl Sub<Direction3> for Point3 {
+    type Output = Self;
+
+    fn sub(self, rhs: Direction3) -> Self::Output { Self(self.0 - rhs.xyz().into()) }
+}
+
