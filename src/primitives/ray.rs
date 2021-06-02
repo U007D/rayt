@@ -1,17 +1,17 @@
 use crate::{
     traits::{IPixel, IPixelExt, ITriplet},
-    Direction3, Pixel, Point3, Result,
+    Pixel, Point3, Result, Vec3,
 };
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Ray {
     origin:    Point3,
-    direction: Direction3,
+    direction: Vec3,
 }
 
 impl Ray {
     #[must_use]
-    pub const fn new(origin: Point3, direction: Direction3) -> Self { Self { origin, direction } }
+    pub const fn new(origin: Point3, direction: Vec3) -> Self { Self { origin, direction } }
 
     #[must_use]
     pub fn at(&self, t: f64) -> Point3 { self.origin + t * self.direction }

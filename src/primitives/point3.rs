@@ -1,10 +1,8 @@
-use crate::{primitives::vec3::Vec3, traits::ITriplet, Direction3};
-use derive_more::{Add, AddAssign, Deref, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use std::ops::{Add, Mul, Sub};
+use crate::{traits::ITriplet, Vec3};
+use derive_more::Neg;
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-#[derive(
-    Add, AddAssign, Clone, Copy, Debug, Default, Deref, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
-)]
+#[derive(Clone, Copy, Debug, Default, Neg, PartialEq)]
 pub struct Point3(Vec3);
 
 impl Point3 {
@@ -15,10 +13,24 @@ impl Point3 {
     }
 }
 
-impl Add<Direction3> for Point3 {
+impl Add<Vec3> for Point3 {
     type Output = Self;
 
-    fn add(self, rhs: Direction3) -> Self::Output { Self(self.0 + rhs.xyz().into()) }
+    fn add(self, rhs: Vec3) -> Self::Output { Self(self.0 + rhs.xyz().into()) }
+}
+
+impl AddAssign<Vec3> for Point3 {
+    fn add_assign(&mut self, rhs: Vec3) { self.0 += rhs; }
+}
+
+impl Div<<Self as ITriplet>::Value> for Point3 {
+    type Output = Self;
+
+    fn div(self, rhs: <Self as ITriplet>::Value) -> Self::Output { Self(self.0 / rhs) }
+}
+
+impl DivAssign<<Self as ITriplet>::Value> for Point3 {
+    fn div_assign(&mut self, rhs: <Self as ITriplet>::Value) { self.0 /= rhs; }
 }
 
 impl From<(<Self as ITriplet>::Value, <Self as ITriplet>::Value, <Self as ITriplet>::Value)> for Point3 {
@@ -47,15 +59,34 @@ impl ITriplet for Point3 {
     fn z(&self) -> Self::Value { self.0.z() }
 }
 
+impl Mul<<Self as ITriplet>::Value> for Point3 {
+    type Output = Self;
+
+    fn mul(self, rhs: <Self as ITriplet>::Value) -> Self::Output { Self(self.0 * rhs) }
+}
+
 impl Mul<Point3> for <Point3 as ITriplet>::Value {
     type Output = Point3;
 
     fn mul(self, rhs: Point3) -> Self::Output { rhs * self }
 }
 
-impl Sub<Direction3> for Point3 {
-    type Output = Self;
-
-    fn sub(self, rhs: Direction3) -> Self::Output { Self(self.0 - rhs.xyz().into()) }
+impl MulAssign<<Self as ITriplet>::Value> for Point3 {
+    fn mul_assign(&mut self, rhs: <Self as ITriplet>::Value) { self.0 *= rhs; }
 }
 
+impl Sub for Point3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: Self) -> Self::Output { self.0 - rhs.0 }
+}
+
+impl Sub<Vec3> for Point3 {
+    type Output = Self;
+
+    fn sub(self, rhs: Vec3) -> Self::Output { Self(self.0 - rhs) }
+}
+
+impl SubAssign<Vec3> for Point3 {
+    fn sub_assign(&mut self, rhs: Vec3) { self.0 -= rhs; }
+}

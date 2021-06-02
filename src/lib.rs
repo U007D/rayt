@@ -43,17 +43,13 @@ pub use adapters::encoders;
 pub use args::Args;
 pub use error::{Error, Result};
 pub use image::Image;
-pub use primitives::{direction3::Direction3, pixel::Pixel, point3::Point3};
+pub use primitives::{pixel::Pixel, point3::Point3, vec3::Vec3};
 use std::{
     fs::File,
     io::{stdout, BufWriter},
 };
 
-use crate::{
-    adapters::encoders::image::Ppm,
-    consts::IMAGE,
-    traits::IEncoderProgress,
-};
+use crate::{adapters::encoders::image::Ppm, consts::IMAGE, traits::IEncoderProgress};
 
 pub fn lib_main(args: Args) -> Result<()> {
     let mut output_device = BufWriter::new(File::create(args.output_image_name)?);
@@ -63,4 +59,3 @@ pub fn lib_main(args: Args) -> Result<()> {
     Ppm::encode(&image, &mut output_device, &mut status_device)?;
     Ok(())
 }
-

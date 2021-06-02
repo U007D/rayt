@@ -2,7 +2,7 @@ use crate::{
     consts::*,
     primitives::ray::Ray,
     traits::{IImage, IPixel, IPixelExt, IRgbPixel, ITriplet},
-    Direction3, Error, Image, Pixel, Point3, Result,
+    Error, Image, Pixel, Point3, Result, Vec3,
 };
 use std::cmp::max;
 
@@ -15,27 +15,23 @@ where
     let viewport_width = ASPECT_RATIO * viewport_height;
     let focal_length = 1.0;
     let origin = Point3::default();
-    let x_axial = Direction3::new(viewport_width, 0.0, 0.0);
-    let y_axial = Direction3::new(0.0, viewport_height, 0.0);
-    let z_axial = Direction3::new(0.0, 0.0, focal_length);
+    let x_axial = Vec3::new(viewport_width, 0.0, 0.0);
+    let y_axial = Vec3::new(0.0, viewport_height, 0.0);
+    let z_axial = Vec3::new(0.0, 0.0, focal_length);
     let lower_left_corner = origin - x_axial / 2.0 - y_axial / 2.0 - z_axial;
 
     // Render (empty) scene
-    let image = {
-        let mut temp = Image::new(IMAGE.width, IMAGE.height)?;
-        let image_height = image.height().get();
-        let image_width = image.width().get();
-        image.row_iter_mut().enumerate().try_for_each(|(row, pixels)| {
-            pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
-                let u = pixel.try_value_from_usize(col)?
-                    / pixel.try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
-                let v = pixel.try_value_from_usize(row)?
-                    / pixel.try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
-                let ray = Ray::new(origin, (lower_left_corner + u * x_axial + v * y_axial - origin).xyz().into());
-                pixel.set_pixel(ray.default_color()?);
-                Ok::<_, Error>(())
-            })
+    let image_height = image.height().get();
+    let image_width = image.width().get();
+    image.row_iter_mut().enumerate().try_for_each(|(row, pixels)| {
+        pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
+            let u = pixel.try_value_from_usize(col)?
+                / pixel.try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
+            let v =
+                pixel.try_value_from_usize(row)? / pixel.try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
+            let ray = Ray::new(origin, lower_left_corner + u * x_axial + v * y_axial - origin);
+            pixel.set_pixel(ray.default_color()?);
+            Ok::<_, Error>(())
         })
-    };
-    Ok(())
+    })
 }
