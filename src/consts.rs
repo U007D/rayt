@@ -1,4 +1,3 @@
-use bool_ext::BoolExt;
 use std::num::NonZeroUsize;
 
 pub mod msg;

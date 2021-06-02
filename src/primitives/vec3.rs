@@ -3,15 +3,14 @@ mod unit_tests;
 
 use crate::{consts::*, traits::ITriplet};
 use bool_ext::BoolExt;
-use derive_more::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use derive_more::{Add, AddAssign, Neg, Sub, SubAssign};
+use num_traits::One;
 use std::{
     array,
-    ops::{Index, Mul},
+    ops::{Div, DivAssign, Index, Mul, MulAssign},
 };
 
-#[derive(
-    Add, AddAssign, Clone, Copy, Debug, Default, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
-)]
+#[derive(Add, AddAssign, Clone, Copy, Debug, Default, Neg, PartialEq, Sub, SubAssign)]
 pub struct Vec3 {
     x: f64,
     y: f64,
@@ -54,8 +53,27 @@ impl Vec3 {
     }
 }
 
-impl From<(<Self as ITriplet>::Value,<Self as ITriplet>::Value,<Self as ITriplet>::Value)> for Vec3 {
-    fn from(tuple: (<Self as ITriplet>::Value,<Self as ITriplet>::Value,<Self as ITriplet>::Value)) -> Self {
+impl Div<<Self as ITriplet>::Value> for Vec3
+where
+    <Self as ITriplet>::Value: One,
+{
+    type Output = Self;
+
+    fn div(self, rhs: <Self as ITriplet>::Value) -> Self::Output {
+        Self::new(self.x() / rhs, self.y() / rhs, self.z() / rhs)
+    }
+}
+
+impl DivAssign<<Self as ITriplet>::Value> for Vec3 {
+    fn div_assign(&mut self, rhs: <Self as ITriplet>::Value) {
+        self.x /= rhs;
+        self.y /= rhs;
+        self.z /= rhs;
+    }
+}
+
+impl From<(<Self as ITriplet>::Value, <Self as ITriplet>::Value, <Self as ITriplet>::Value)> for Vec3 {
+    fn from(tuple: (<Self as ITriplet>::Value, <Self as ITriplet>::Value, <Self as ITriplet>::Value)) -> Self {
         Self::new(tuple.0, tuple.1, tuple.2)
     }
 }
@@ -87,10 +105,26 @@ impl<'a> IntoIterator for &'a Vec3 {
     fn into_iter(self) -> Self::IntoIter { (*self).into_iter() }
 }
 
+impl Mul<<Self as ITriplet>::Value> for Vec3 {
+    type Output = Self;
+
+    fn mul(self, rhs: <Self as ITriplet>::Value) -> Self::Output {
+        Self::new(self.x() * rhs, self.y() * rhs, self.z() * rhs)
+    }
+}
+
 impl Mul<Vec3> for <Vec3 as ITriplet>::Value {
     type Output = Vec3;
 
     fn mul(self, rhs: Vec3) -> Self::Output { rhs * self }
+}
+
+impl MulAssign<<Self as ITriplet>::Value> for Vec3 {
+    fn mul_assign(&mut self, rhs: <Self as ITriplet>::Value) {
+        self.x *= rhs;
+        self.y *= rhs;
+        self.z *= rhs;
+    }
 }
 
 impl ITriplet for Vec3 {
