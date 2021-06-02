@@ -1,8 +1,8 @@
 use crate::{
     consts::*,
-    primitives::{ray::Ray, sphere::Sphere},
-    traits::{IImage, IPixel, IPixelExt, IRgbPixel, ITriplet},
-    Error, Image, Pixel, Point3, Result, Vec3,
+    primitives::ray::Ray,
+    traits::{IImage, IPixel, IPixelExt, IRgbPixel},
+    Error, Pixel, Point3, Result, Vec3,
 };
 use std::cmp::max;
 
