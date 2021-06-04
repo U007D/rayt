@@ -49,7 +49,7 @@ impl Pixel {
 
 impl From<Pixel> for (u8, u8, u8) {
     fn from(pixel: Pixel) -> Self {
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
         (
             (pixel.0.x() * DISTINCT_U8_VALUES) as u8,
             (pixel.0.y() * DISTINCT_U8_VALUES) as u8,
@@ -68,12 +68,12 @@ impl IntoIterator for Pixel {
 impl IPixel for Pixel {
     type Value = <Vec3 as ITriplet>::Value;
 
-    const MAX: Self::Value = 1.0 - f64::EPSILON;
+    const MAX: Self::Value = 1.0;
     const MIN: Self::Value = 0.0;
 }
 
 impl IPixelExt for Pixel {
-    fn max() -> Self { Self(Vec3::new(<Self as IPixel>::MAX, <Self as IPixel>::MAX, <Self as IPixel>::MAX)) }
+    fn max_channels() -> Self { Self(Vec3::new(<Self as IPixel>::MAX, <Self as IPixel>::MAX, <Self as IPixel>::MAX)) }
 
     fn try_value_from_usize(&self, value: usize) -> Result<Self::Value> {
         Ok(<Self as IPixel>::Value::value_from(value)?)
@@ -101,7 +101,5 @@ impl IRgbPixel for Pixel {
 impl Mul<Pixel> for <Pixel as IPixel>::Value {
     type Output = Pixel;
 
-    fn mul(self, rhs: Pixel) -> Self::Output {
-        rhs * self
-    }
+    fn mul(self, rhs: Pixel) -> Self::Output { rhs * self }
 }

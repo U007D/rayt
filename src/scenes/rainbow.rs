@@ -4,6 +4,7 @@ use crate::{
 };
 use std::cmp::max;
 
+#[allow(dead_code)]
 pub fn render<TImage>(image: &mut TImage) -> Result<()>
 where
     TImage: IImage,
