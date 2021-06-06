@@ -1,5 +1,6 @@
-use crate::{primitives::ray::Ray, traits::IIntersect, IntersectRecord, Point3, Vec3};
+use crate::{primitives::ray::Ray, traits::IIntersect, IntersectRecord, Point3};
 use bool_ext::BoolExt;
+use std::ops::RangeInclusive;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -19,7 +20,7 @@ impl Sphere {
 }
 
 impl IIntersect for Sphere {
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<IntersectRecord> {
+    fn intersect(&self, ray: &Ray, t_range: RangeInclusive<f64>) -> Option<IntersectRecord> {
         let oc = ray.origin() - self.center();
         let a = ray.direction().length_squared();
         (a != 0.0 && self.radius != 0.0).map_or(None, || {
@@ -34,17 +35,18 @@ impl IIntersect for Sphere {
 
                     // Find the nearest root that lies in the acceptable range
                     let root = (-half_b - sqrtd) / a;
-                    (root < t_min || root > t_max).map_or_else(
+                    (root < *t_range.start() || root > *t_range.end()).map_or_else(
                         || Some(root),
                         || {
                             let root = (-half_b + sqrtd) / a;
-                            (root < t_min || root > t_max).map_or_else(|| Some(root), || None)
+                            (root < *t_range.start() || root > *t_range.end()).map_or_else(|| Some(root), || None)
                         },
                     )
                 })
                 .map(|root| {
                     let point3 = ray.at(root);
-                    IntersectRecord::new(point3, (point3 - self.center) / self.radius, root)
+                    let outward_normal = (point3 - self.center) / self.radius;
+                    IntersectRecord::new(point3, ray, &outward_normal, root)
                 })
         })
     }

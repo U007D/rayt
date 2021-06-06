@@ -34,22 +34,24 @@ pub mod adapters;
 mod args;
 pub mod consts;
 pub mod error;
-mod hit_record;
 mod image;
+mod intersect_record;
 mod primitives;
 mod scenes;
 pub mod traits;
+mod world;
 
 pub use adapters::encoders;
 pub use args::Args;
 pub use error::{Error, Result};
-pub use hit_record::IntersectRecord;
 pub use image::Image;
+use intersect_record::IntersectRecord;
 pub use primitives::{pixel::Pixel, point3::Point3, vec3::Vec3};
 use std::{
     fs::File,
     io::{stdout, BufWriter},
 };
+use world::World;
 
 use crate::{adapters::encoders::image::Ppm, consts::IMAGE, traits::IEncoderProgress};
 
@@ -57,7 +59,7 @@ pub fn lib_main(args: Args) -> Result<()> {
     let mut output_device = BufWriter::new(File::create(args.output_image_name)?);
     let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
-    scenes::basic_red_sphere::render(&mut image)?;
+    scenes::sphere_and_ground::render(&mut image)?;
     Ppm::encode(&image, &mut output_device, &mut status_device)?;
     Ok(())
 }

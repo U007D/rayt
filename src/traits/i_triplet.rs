@@ -1,6 +1,7 @@
 use num_traits::Num;
+use std::fmt::Debug;
 
-pub trait ITriplet: Clone {
+pub trait ITriplet: Clone + Debug {
     type Value: Num + Copy;
 
     fn x(&self) -> Self::Value;

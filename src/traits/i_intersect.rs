@@ -1,5 +1,7 @@
 use crate::{primitives::ray::Ray, IntersectRecord};
+use std::fmt::Debug;
+use std::ops::RangeInclusive;
 
-pub trait IIntersect {
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<IntersectRecord>;
+pub trait IIntersect: Debug {
+    fn intersect(&self, ray: &Ray, t_range_inclusive: RangeInclusive<f64>) -> Option<IntersectRecord>;
 }

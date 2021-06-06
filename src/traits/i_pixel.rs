@@ -1,7 +1,8 @@
 use crate::Result;
 use num_traits::{MulAdd, Num};
+use std::fmt::Debug;
 
-pub trait IPixel: Copy + Into<(u8, u8, u8)> {
+pub trait IPixel: Copy + Debug + Into<(u8, u8, u8)> {
     type Value: Num + Copy + PartialOrd + MulAdd;
     const MAX: Self::Value;
     const MIN: Self::Value;
@@ -23,6 +24,7 @@ pub trait IRgbPixel: IPixel {
     fn g(&self) -> Self::Value;
     #[must_use]
     fn r(&self) -> Self::Value;
+    fn rgb(&self) -> (Self::Value, Self::Value, Self::Value) { (self.r(), self.g(), self.b()) }
     fn set(&mut self, r: Self::Value, g: Self::Value, b: Self::Value) -> Result<&mut Self>;
     fn set_pixel(&mut self, pixel: Self) -> &mut Self {
         *self = pixel;

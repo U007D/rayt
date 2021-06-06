@@ -2,16 +2,16 @@ use crate::{
     consts::*,
     primitives::{ray::Ray, sphere::Sphere},
     traits::{IImage, IPixel, IPixelExt, IRgbPixel},
-    world::World,
-    Error, Pixel, Point3, Result, Vec3,
+    Error, Pixel, Point3, Result, Vec3, World,
 };
 use std::cmp::max;
 
 #[allow(dead_code)]
-pub fn render<TImage>(image: &mut TImage) -> Result<()>
+pub fn render<'iter, TImage>(image: &'iter mut TImage) -> Result<()>
 where
     TImage: IImage<Pixel = Pixel>,
-    <TImage as IImage>::Pixel: IRgbPixel + IPixelExt + IPixel<Value = f64>, {
+    <TImage as IImage>::Pixel: IRgbPixel + IPixelExt + IPixel<Value = f64>,
+    <TImage as IImage>::IterMut<'iter>: DoubleEndedIterator, {
     // Initialize world
     let world = init();
 
@@ -28,7 +28,7 @@ where
     // Render (empty) scene
     let image_height = image.height().get();
     let image_width = image.width().get();
-    image.row_iter_mut().enumerate().try_for_each(|(row, pixels)| {
+    image.row_iter_mut().rev().enumerate().try_for_each(|(row, pixels)| {
         pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
             let u =
                 pixel.try_value_from_usize(col)? / pixel.try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
@@ -44,5 +44,6 @@ where
 fn init() -> World {
     let mut world = World::new();
     world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
     world
 }

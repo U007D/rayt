@@ -1,7 +1,7 @@
 use crate::Result;
-use std::io::Write;
+use std::{fmt::Debug, io::Write};
 
-pub trait IEncoder<T>
+pub trait IEncoder<T>: Debug
 where
     T: ?Sized, {
     fn encode<TOutputDevice>(source: &T, output_device: &mut TOutputDevice) -> Result<()>

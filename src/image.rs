@@ -40,15 +40,17 @@ impl AsRef<[<Self as IImage>::Pixel]> for Image {
 }
 
 impl IImage for Image {
-    type Pixel = Pixel;
     type IterMut<'a> = IterMut<'a>;
     type IterRef<'a> = Iter<'a>;
+    type Pixel = Pixel;
 
     #[must_use]
     fn height(&self) -> NonZeroUsize { self.height }
 
     #[must_use]
-    fn row_iter(&self) -> Self::IterRef<'_> { Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() } }
+    fn row_iter(&self) -> Self::IterRef<'_> {
+        Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() }
+    }
 
     #[must_use]
     fn row_iter_mut(&mut self) -> IterMut<'_> {
@@ -64,6 +66,10 @@ impl IImage for Image {
 pub struct Iter<'a> {
     pixels: Chunks<'a, Pixel>,
     len:    NonZeroUsize,
+}
+
+impl DoubleEndedIterator for Iter<'_> {
+    fn next_back(&mut self) -> Option<Self::Item> { self.pixels.next_back() }
 }
 
 impl ExactSizeIterator for Iter<'_> {}
@@ -84,6 +90,10 @@ impl<'a> Iterator for Iter<'a> {
 pub struct IterMut<'a> {
     pixels: ChunksMut<'a, Pixel>,
     len:    NonZeroUsize,
+}
+
+impl DoubleEndedIterator for IterMut<'_> {
+    fn next_back(&mut self) -> Option<Self::Item> { self.pixels.next_back() }
 }
 
 impl ExactSizeIterator for IterMut<'_> {}

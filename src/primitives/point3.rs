@@ -1,4 +1,8 @@
-use crate::{traits::ITriplet, Vec3};
+use crate::{
+    primitives::pixel::Pixel,
+    traits::{IRgbPixel, ITriplet},
+    Vec3,
+};
 use derive_more::Neg;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
@@ -19,6 +23,12 @@ impl Add<Vec3> for Point3 {
     fn add(self, rhs: Vec3) -> Self::Output { Self(self.0 + rhs.xyz().into()) }
 }
 
+impl Add<&'_ Vec3> for Point3 {
+    type Output = Self;
+
+    fn add(self, rhs: &'_ Vec3) -> Self::Output { self + *rhs }
+}
+
 impl AddAssign<Vec3> for Point3 {
     fn add_assign(&mut self, rhs: Vec3) { self.0 += rhs; }
 }
@@ -36,6 +46,13 @@ impl DivAssign<<Self as ITriplet>::Value> for Point3 {
 impl From<(<Self as ITriplet>::Value, <Self as ITriplet>::Value, <Self as ITriplet>::Value)> for Point3 {
     fn from(tuple: (<Self as ITriplet>::Value, <Self as ITriplet>::Value, <Self as ITriplet>::Value)) -> Self {
         Self::new(tuple.0, tuple.1, tuple.2)
+    }
+}
+
+impl From<Pixel> for Point3 {
+    fn from(pixel: Pixel) -> Self {
+        let (x, y, z) = pixel.rgb();
+        Self::new(x, y, z)
     }
 }
 
