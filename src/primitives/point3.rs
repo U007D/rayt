@@ -81,6 +81,12 @@ impl Sub for Point3 {
     fn sub(self, rhs: Self) -> Self::Output { self.0 - rhs.0 }
 }
 
+impl Sub for &Point3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: Self) -> Self::Output { *self - *rhs }
+}
+
 impl Sub<Vec3> for Point3 {
     type Output = Self;
 

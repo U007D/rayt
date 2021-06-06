@@ -34,6 +34,7 @@ pub mod adapters;
 mod args;
 pub mod consts;
 pub mod error;
+mod hit_record;
 mod image;
 mod primitives;
 mod scenes;
@@ -42,6 +43,7 @@ pub mod traits;
 pub use adapters::encoders;
 pub use args::Args;
 pub use error::{Error, Result};
+pub use hit_record::IntersectRecord;
 pub use image::Image;
 pub use primitives::{pixel::Pixel, point3::Point3, vec3::Vec3};
 use std::{
