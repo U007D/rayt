@@ -1,13 +1,14 @@
 use crate::{
-    consts::*,
-    primitives::{ray::Ray, sphere::Sphere},
-    traits::{IImage, IPixel, IPixelExt, IRgbPixel},
+    camera::Camera,
+    primitives::sphere::Sphere,
+    traits::{IImage, IPixel, IPixelExt, IRgbPixel, ITriplet},
     Error, Pixel, Point3, Result, Vec3, World,
 };
-use std::cmp::max;
+use rand::{thread_rng, Rng};
+use std::{cmp::max, num::NonZeroUsize};
 
 #[allow(dead_code)]
-pub fn render<'iter, TImage>(image: &'iter mut TImage) -> Result<()>
+pub fn render<'iter, TImage>(image: &'iter mut TImage, aa_sample_factor: NonZeroUsize) -> Result<()>
 where
     TImage: IImage<Pixel = Pixel>,
     <TImage as IImage>::Pixel: IRgbPixel + IPixelExt + IPixel<Value = f64>,
@@ -15,27 +16,28 @@ where
     // Initialize world
     let world = init();
 
-    // Set up camera
-    let viewport_height = 2.0;
-    let viewport_width = ASPECT_RATIO * viewport_height;
-    let focal_length = 1.0;
-    let origin = Point3::default();
-    let x_axial = Vec3::new(viewport_width, 0.0, 0.0);
-    let y_axial = Vec3::new(0.0, viewport_height, 0.0);
-    let z_axial = Vec3::new(0.0, 0.0, focal_length);
-    let lower_left_corner = origin - x_axial / 2.0 - y_axial / 2.0 - z_axial;
+    // Initialize camera
+    let cam = Camera::new();
 
     // Render (empty) scene
+    let mut rng = thread_rng();
     let image_height = image.height().get();
     let image_width = image.width().get();
+    let aa_sample_factor = aa_sample_factor.get();
     image.row_iter_mut().rev().enumerate().try_for_each(|(row, pixels)| {
         pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
-            let u =
-                pixel.try_value_from_usize(col)? / pixel.try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
-            let v = pixel.try_value_from_usize(row)?
-                / pixel.try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
-            let ray = Ray::new(origin, lower_left_corner + u * x_axial + v * y_axial - origin);
-            pixel.set_pixel(ray.color(&world)?);
+            let acc_color = (0..aa_sample_factor).try_fold(Vec3::from(pixel.rgb()), |acc, _| {
+                let u = (<Pixel as IPixelExt>::try_value_from_usize(col)?
+                    + <Pixel as IPixelExt>::try_value_from_f64(rng.gen())?)
+                    / <Pixel as IPixelExt>::try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
+                let v = (<Pixel as IPixelExt>::try_value_from_usize(row)?
+                    + <Pixel as IPixelExt>::try_value_from_f64(rng.gen())?)
+                    / <Pixel as IPixelExt>::try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
+                let ray = cam.ray(&u, &v);
+                Ok::<_, Error>(acc + Vec3::from(ray.color(&world)?.rgb()))
+            })?;
+            let color = acc_color / <Pixel as IPixelExt>::try_value_from_usize(aa_sample_factor)?;
+            pixel.set(color.x(), color.y(), color.z())?;
             Ok::<_, Error>(())
         })
     })

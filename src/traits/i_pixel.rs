@@ -13,8 +13,8 @@ pub trait IPixel: Copy + Debug + Into<(u8, u8, u8)> {
 pub trait IPixelExt: IPixel {
     #[must_use]
     fn max_channels() -> Self;
-    fn try_value_from_usize(&self, value: usize) -> Result<Self::Value>;
-    fn try_value_from_f64(&self, value: f64) -> Result<Self::Value>;
+    fn try_value_from_usize(value: usize) -> Result<Self::Value>;
+    fn try_value_from_f64(value: f64) -> Result<Self::Value>;
 }
 
 pub trait IRgbPixel: IPixel {

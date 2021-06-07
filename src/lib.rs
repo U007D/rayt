@@ -32,6 +32,7 @@
 
 pub mod adapters;
 mod args;
+mod camera;
 pub mod consts;
 pub mod error;
 mod image;
@@ -53,13 +54,13 @@ use std::{
 };
 use world::World;
 
-use crate::{adapters::encoders::image::Ppm, consts::IMAGE, traits::IEncoderProgress};
+use crate::{adapters::encoders::image::Ppm, consts::*, traits::IEncoderProgress};
 
 pub fn lib_main(args: Args) -> Result<()> {
     let mut output_device = BufWriter::new(File::create(args.output_image_name)?);
     let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
-    scenes::sphere_and_ground::render(&mut image)?;
+    scenes::sphere_and_ground::render(&mut image, AA_SAMPLE_FACTOR)?;
     Ppm::encode(&image, &mut output_device, &mut status_device)?;
     Ok(())
 }

@@ -15,11 +15,13 @@ where
 
     image.row_iter_mut().enumerate().try_for_each(|(row, pixels)| {
         pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
-            let r = pixel.try_value_from_usize(col)? / pixel.try_value_from_usize(max(width.saturating_sub(1), 1))?
+            let r = <<TImage as IImage>::Pixel as IPixelExt>::try_value_from_usize(col)?
+                / <<TImage as IImage>::Pixel as IPixelExt>::try_value_from_usize(max(width.saturating_sub(1), 1))?
                 * value_max;
-            let g = pixel.try_value_from_usize(row)? / pixel.try_value_from_usize(max(height.saturating_sub(1), 1))?
+            let g = <<TImage as IImage>::Pixel as IPixelExt>::try_value_from_usize(row)?
+                / <<TImage as IImage>::Pixel as IPixelExt>::try_value_from_usize(max(height.saturating_sub(1), 1))?
                 * value_max;
-            let b = pixel.try_value_from_f64(0.25)?;
+            let b = <<TImage as IImage>::Pixel as IPixelExt>::try_value_from_f64(0.25)?;
             pixel.set(r, g, b)?;
 
             Ok::<_, Error>(())

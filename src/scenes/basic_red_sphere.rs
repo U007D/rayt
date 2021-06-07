@@ -30,10 +30,10 @@ where
     let image_width = image.width().get();
     image.row_iter_mut().enumerate().try_for_each(|(row, pixels)| {
         pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
-            let u =
-                pixel.try_value_from_usize(col)? / pixel.try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
-            let v = pixel.try_value_from_usize(row)?
-                / pixel.try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
+            let u = <Pixel as IPixelExt>::try_value_from_usize(col)?
+                / <Pixel as IPixelExt>::try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
+            let v = <Pixel as IPixelExt>::try_value_from_usize(row)?
+                / <Pixel as IPixelExt>::try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
             let ray = Ray::new(origin, lower_left_corner + u * x_axial + v * y_axial - origin);
             pixel.set_pixel(ray.color(&world)?);
             Ok::<_, Error>(())
