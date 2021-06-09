@@ -8,7 +8,10 @@ use crate::{
     Result,
 };
 use conv::ValueFrom;
-use std::io::{sink, Write};
+use std::{
+    cmp::max,
+    io::{sink, Write},
+};
 
 #[derive(Debug)]
 pub struct Ppm;
@@ -35,16 +38,12 @@ impl Ppm {
         pixels.try_for_each(|pixel| U8::encode(pixel, output_device))
     }
 
-    fn write_status<TStatusDevice, TImage>(
-        status_device: &mut TStatusDevice,
-        image: &TImage,
-        row: usize,
-    ) -> Result<()>
+    fn write_status<TStatusDevice>(current: usize, max_value: usize, status_device: &mut TStatusDevice) -> Result<()>
     where
-        TStatusDevice: Write,
-        TImage: IImage, {
-        let percent_progress = f32::value_from(row)? / f32::value_from(image.height().get())? * 100.0;
-        Ok(write!(status_device, "\r{}: {:.0}%", msg::PROGRESS, percent_progress)?)
+        TStatusDevice: Write, {
+        let percent_progress =
+            f32::value_from(current)? / f32::value_from(max(max_value.saturating_sub(1), 1))? * 100.0;
+        Ok(write!(status_device, "\r{}: {:.0}%", msg::ENCODER_PROGRESS, percent_progress)?)
     }
 }
 
@@ -75,8 +74,9 @@ where
         TStatusDevice: Write, {
         Self::write_header(output_device, image)?;
 
+        let row_count = image.height().get();
         image.row_iter().enumerate().try_for_each(|(row, pixels)| {
-            Self::write_status(status_device, image, row)?;
+            Self::write_status(row, row_count, status_device)?;
             Self::write_pixel_row(output_device, pixels.iter())
         })?;
         output_device.flush()?;

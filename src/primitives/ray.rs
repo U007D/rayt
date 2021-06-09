@@ -1,8 +1,10 @@
 use crate::{
-    traits::{IPixelExt, ITriplet},
+    primitives::{Pixel, Point3, Vec3},
+    traits::{IPixelExt, IRandomConstructors, IRgbPixel, ITriplet},
     world::World,
-    Pixel, Point3, Result, Vec3,
+    Result,
 };
+use bool_ext::BoolExt;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Ray {
@@ -18,16 +20,25 @@ impl Ray {
     pub fn at(&self, t: f64) -> Point3 { self.origin + t * self.direction }
 
     #[allow(clippy::shadow_unrelated)]
-    pub fn color(&self, world: &World) -> Result<Pixel> {
-        world.nearest_intersection(self, 0.0..=f64::INFINITY).map_or_else(
+    pub fn color(&self, world: &World, depth: usize) -> Result<Pixel> {
+        (depth > 0).map_or_else(
+            || Ok(Pixel::default()),
             || {
-                let unit_direction = self.direction().unit_vector();
-                let t = 0.5 * (unit_direction.y() + 1.0);
-                Ok((1.0 - t) * Pixel::max_channels() + t * Pixel::new(0.5, 0.7, 1.0)?)
-            },
-            |record| {
-                let (r, g, b) = (0.5 * (Point3::from(Pixel::max_channels()) + record.normal())).xyz();
-                Pixel::new(r, g, b)
+                world.nearest_intersection(self, 0.001..=f64::INFINITY).map_or_else(
+                    || {
+                        let unit_direction = self.direction().unit_vector();
+                        let t = 0.5 * (unit_direction.y() + 1.0);
+                        Ok((1.0 - t) * Pixel::max_channels() + t * Pixel::new(0.5, 0.7, 1.0)?)
+                    },
+                    |record| {
+                        let target = record.point3() + record.normal() + Vec3::random_in_unit_sphere();
+                        let (r, g, b) = (0.5
+                            * Self::new(*record.point3(), target - record.point3())
+                                .color(world, depth.saturating_sub(1))?)
+                        .rgb();
+                        Pixel::new(r, g, b)
+                    },
+                )
             },
         )
     }

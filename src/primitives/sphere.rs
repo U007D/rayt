@@ -1,4 +1,8 @@
-use crate::{primitives::ray::Ray, traits::IIntersect, IntersectRecord, Point3};
+use crate::{
+    intersect_record::IntersectRecord,
+    primitives::{Point3, Ray},
+    traits::IIntersect,
+};
 use bool_ext::BoolExt;
 use std::ops::RangeInclusive;
 

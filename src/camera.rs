@@ -1,8 +1,7 @@
 use crate::{
     consts::ASPECT_RATIO,
-    primitives::{pixel::Pixel, ray::Ray},
+    primitives::{Pixel, Point3, Ray, Vec3},
     traits::IPixel,
-    Point3, Vec3,
 };
 
 #[derive(Debug)]

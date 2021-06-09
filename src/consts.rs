@@ -29,3 +29,4 @@ const IMAGE_HEIGHT: NonZeroUsize = NonZeroUsize::new(
         / ASPECT_RATIO) as usize,
 )
 .unwrap();
+pub const MAX_RENDER_DEPTH: usize = 50;

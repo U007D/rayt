@@ -20,3 +20,7 @@ impl Display for Error {
 impl PartialEq for Error {
     fn eq(&self, rhs: &Self) -> bool { self.0.kind() == rhs.0.kind() }
 }
+
+impl From<std::io::Error> for crate::Error {
+    fn from(err: std::io::Error) -> Self { Error(err).into() }
+}

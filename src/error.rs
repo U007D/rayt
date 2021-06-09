@@ -1,4 +1,4 @@
-mod io;
+pub mod io;
 
 use crate::consts::msg;
 use conv::PosOverflow;
@@ -34,8 +34,4 @@ impl From<conv::PosOverflow<usize>> for Error {
 
 impl From<std::ffi::OsString> for Error {
     fn from(err: OsString) -> Self { Self::ArgNotConvertibleToUtf8(err) }
-}
-
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self { io::Error(err).into() }
 }

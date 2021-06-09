@@ -1,4 +1,4 @@
-use crate::{primitives::ray::Ray, IntersectRecord};
+use crate::{primitives::Ray, intersect_record::IntersectRecord};
 use std::fmt::Debug;
 use std::ops::RangeInclusive;
 

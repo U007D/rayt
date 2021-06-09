@@ -1,6 +1,6 @@
 pub mod iter;
 
-use crate::{intersect_record, intersect_record::IntersectRecord, primitives::ray::Ray, traits::IIntersect};
+use crate::{intersect_record, intersect_record::IntersectRecord, primitives::Ray, traits::IIntersect};
 use iter::Iter;
 use std::{
     fmt::Debug,

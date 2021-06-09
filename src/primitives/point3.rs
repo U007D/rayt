@@ -1,7 +1,6 @@
 use crate::{
-    primitives::pixel::Pixel,
+    primitives::{Pixel, Vec3},
     traits::{IRgbPixel, ITriplet},
-    Vec3,
 };
 use derive_more::Neg;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
@@ -27,6 +26,12 @@ impl Add<&'_ Vec3> for Point3 {
     type Output = Self;
 
     fn add(self, rhs: &'_ Vec3) -> Self::Output { self + *rhs }
+}
+
+impl Add<&'_ Vec3> for &Point3 {
+    type Output = Point3;
+
+    fn add(self, rhs: &'_ Vec3) -> Self::Output { *self + *rhs }
 }
 
 impl AddAssign<Vec3> for Point3 {
@@ -96,6 +101,12 @@ impl Sub for Point3 {
     type Output = Vec3;
 
     fn sub(self, rhs: Self) -> Self::Output { self.0 - rhs.0 }
+}
+
+impl Sub<&'_ Self> for Point3 {
+    type Output = Vec3;
+
+    fn sub(self, rhs: &'_ Self) -> Self::Output { self - *rhs }
 }
 
 impl Sub for &Point3 {

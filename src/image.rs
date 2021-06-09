@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod unit_tests;
 
-use crate::{traits::IImage, Error, Pixel, Result};
+use crate::{traits::IImage, Error, primitives::Pixel, Result};
 use std::{
     num::NonZeroUsize,
     slice::{Chunks, ChunksMut},

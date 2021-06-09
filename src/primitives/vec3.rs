@@ -9,6 +9,9 @@ use std::{
     array,
     ops::{Div, DivAssign, Index, Mul, MulAssign},
 };
+use crate::traits::IRandomConstructors;
+use rand::{thread_rng, Rng};
+use std::ops::RangeInclusive;
 
 #[derive(Add, AddAssign, Clone, Copy, Debug, Default, Neg, PartialEq, Sub, SubAssign)]
 pub struct Vec3 {
@@ -124,6 +127,18 @@ impl MulAssign<<Self as ITriplet>::Value> for Vec3 {
         self.x *= rhs;
         self.y *= rhs;
         self.z *= rhs;
+    }
+}
+
+impl IRandomConstructors for Vec3 {
+    fn random_in_unit_sphere() -> Self {
+        const RANGE: RangeInclusive<f64> = -1.0..=1.0;
+        let mut rng = thread_rng();
+
+        loop {
+            let candidate = Self::new(rng.gen_range(RANGE), rng.gen_range(RANGE), rng.gen_range(RANGE));
+            if candidate.length_squared() < 1.0 { break candidate }
+        }
     }
 }
 

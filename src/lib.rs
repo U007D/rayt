@@ -15,7 +15,7 @@
     clippy::missing_errors_doc,
     clippy::module_name_repetitions,
     clippy::non_ascii_literal,
-    clippy::pub_enum_variant_names,
+//    clippy::avoid_breaking_exported_api,
     clippy::wildcard_imports,
     incomplete_features
 )]
@@ -38,29 +38,31 @@ pub mod error;
 mod image;
 mod intersect_record;
 mod primitives;
-mod scenes;
+mod scene;
 pub mod traits;
 mod world;
 
-pub use adapters::encoders;
-pub use args::Args;
-pub use error::{Error, Result};
-pub use image::Image;
-use intersect_record::IntersectRecord;
-pub use primitives::{pixel::Pixel, point3::Point3, vec3::Vec3};
+use crate::{
+    adapters::encoders::image::Ppm,
+    consts::*,
+    scene::Scene,
+    traits::{IEncoderProgress, IRenderProgress},
+};
+pub use crate::{
+    args::Args,
+    error::{Error, Result},
+    image::Image,
+};
 use std::{
     fs::File,
     io::{stdout, BufWriter},
 };
-use world::World;
-
-use crate::{adapters::encoders::image::Ppm, consts::*, traits::IEncoderProgress};
 
 pub fn lib_main(args: Args) -> Result<()> {
     let mut output_device = BufWriter::new(File::create(args.output_image_name)?);
     let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
-    scenes::sphere_and_ground::render(&mut image, AA_SAMPLE_FACTOR)?;
+    Scene::new().render(&mut image, AA_SAMPLE_FACTOR, &mut status_device)?;
     Ppm::encode(&image, &mut output_device, &mut status_device)?;
     Ok(())
 }

@@ -1,4 +1,4 @@
-use crate::{primitives::ray::Ray, Point3, Vec3};
+use crate::primitives::{Point3, Ray, Vec3};
 use bool_ext::BoolExt;
 
 #[derive(Clone, Debug, PartialEq)]
