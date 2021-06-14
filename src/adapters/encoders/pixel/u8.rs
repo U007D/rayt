@@ -6,7 +6,7 @@ use crate::{
     traits::{IPixel, IPixelEncoder},
     Result,
 };
-use std::{fmt::Display, io::Write, ops::Div};
+use std::io::Write;
 
 #[derive(Debug)]
 pub struct U8;
@@ -14,7 +14,6 @@ pub struct U8;
 impl<'a, TPixel> IPixelEncoder<'a, TPixel> for U8
 where
     TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>,
-    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
 {
     fn encode<TOutputDevice>(pixel: &'a TPixel, output_device: &mut TOutputDevice) -> Result<()>
     where

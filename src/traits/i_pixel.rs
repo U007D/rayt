@@ -1,9 +1,10 @@
 use crate::Result;
 use num_traits::{MulAdd, Num};
 use std::fmt::{Debug, Display};
+use std::ops::Div;
 
-pub trait IPixel: Copy + Debug + Into<(u8, u8, u8)> {
-    type Value: Num + Copy + Display + MulAdd + PartialOrd;
+pub trait IPixel: Copy + Debug + Display + Div<f64, Output = Self> {
+    type Value: Num + Copy + Debug + Display + Div<f64, Output = Self::Value> + MulAdd + PartialOrd;
     const MAX: Self::Value;
     const MIN: Self::Value;
     // TODO: Figure out how to implement contract bound on associated consts

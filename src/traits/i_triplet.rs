@@ -1,10 +1,8 @@
 use num_traits::Num;
-use std::{fmt::Debug, ops::Div};
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
 pub trait ITriplet: Clone + Debug {
-    // TODO: Remove `Div<f64, Output = <Self as IPixel>::Value` from type bounds on encoders, as this should suffice.
-    type Value: Num + Copy + Display + Div<f64, Output = Self::Value>;
+    type Value: Num + Copy + Debug + Display;
 
     fn x(&self) -> Self::Value;
     fn xyz(&self) -> (Self::Value, Self::Value, Self::Value);

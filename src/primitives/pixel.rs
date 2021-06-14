@@ -10,12 +10,29 @@ use crate::{
 };
 use bool_ext::BoolExt;
 use conv::ValueFrom;
-use derive_more::{Add, AddAssign, Deref, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use std::{array, ops::Mul};
-use std::ops::Div;
+use derive_more::{Add, AddAssign, Deref, Display, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::{
+    array,
+    ops::{Div, Mul},
+};
 
 #[derive(
-    Add, AddAssign, Clone, Copy, Debug, Default, Deref, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
+    Add,
+    AddAssign,
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    Deref,
+    Display,
+    Div,
+    DivAssign,
+    Mul,
+    MulAssign,
+    Neg,
+    PartialEq,
+    Sub,
+    SubAssign,
 )]
 pub struct Pixel(Vec3);
 
@@ -45,17 +62,6 @@ impl Pixel {
     #[allow(clippy::needless_pass_by_value)]
     fn validate_channel(value: <Self as IPixel>::Value) -> Option<<Self as IPixel>::Value> {
         (<Self as IPixel>::MIN..=<Self as IPixel>::MAX).contains(&value).some(value)
-    }
-}
-
-impl From<Pixel> for (u8, u8, u8) {
-    fn from(pixel: Pixel) -> Self {
-        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::integer_arithmetic)]
-        (
-            (pixel.0.x() * DISTINCT_U8_VALUES) as u8,
-            (pixel.0.y() * DISTINCT_U8_VALUES) as u8,
-            (pixel.0.z() * DISTINCT_U8_VALUES) as u8,
-        )
     }
 }
 
@@ -111,4 +117,3 @@ impl Div<f64> for &'_ Pixel {
         Pixel::new(self.r() / rhs, self.g() / rhs, self.b() / rhs).expect(msg::ERR_CHANNEL_OVERFLOW)
     }
 }
-

@@ -9,7 +9,7 @@ use crate::{
     Result,
 };
 use conv::ValueFrom;
-use std::{cmp::max, fmt::Display, io::Write, num::NonZeroUsize, ops::Div};
+use std::{cmp::max, io::Write, num::NonZeroUsize};
 
 #[derive(Debug)]
 pub struct Ppm;
@@ -36,9 +36,7 @@ impl Ppm {
     where
         TOutputDevice: Write,
         TPixels: AsRef<[TPixel]>,
-        TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
-        <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
-        <TPixel as IntoIterator>::Item: Display, {
+        TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
         pixels.as_ref().iter().try_for_each(|&pixel| U8::encode(&(pixel / encode_gamma_denom.get()), output_device))
     }
 
@@ -55,9 +53,7 @@ impl<TImageIterRef, TPixels, TPixel> IImageEncoder<TImageIterRef, TPixels, TPixe
 where
     TImageIterRef: Iterator<Item = TPixels> + ExactSizeIterator,
     TPixels: AsRef<[TPixel]>,
-    TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
-    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
-    <TPixel as IntoIterator>::Item: Display,
+    TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>,
 {
 }
 
@@ -65,9 +61,7 @@ impl<TImageIterRef, TPixels, TPixel> IImageEncoderWithProgress<TImageIterRef, TP
 where
     TImageIterRef: Iterator<Item = TPixels> + ExactSizeIterator,
     TPixels: AsRef<[TPixel]>,
-    TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
-    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
-    <TPixel as IntoIterator>::Item: Display,
+    TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>,
 {
     fn encode_with_progress<TOutputDevice, TStatusDevice>(
         iter: TImageIterRef,

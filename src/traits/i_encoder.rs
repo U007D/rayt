@@ -1,8 +1,7 @@
 use crate::{finite_non_zero_float::FiniteNonZeroF64, traits::IPixel, Result};
 use std::{
-    fmt::{Debug, Display},
+    fmt::Debug,
     io::{sink, Write},
-    ops::Div,
 };
 
 pub trait IImageEncoder<TImageIterRef, TPixels, TPixel>:
@@ -10,9 +9,7 @@ pub trait IImageEncoder<TImageIterRef, TPixels, TPixel>:
 where
     TImageIterRef: Iterator<Item = TPixels> + ExactSizeIterator,
     TPixels: AsRef<[TPixel]>,
-    TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
-    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
-    <TPixel as IntoIterator>::Item: Display, {
+    TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
     fn encode<TOutputDevice>(
         iter: TImageIterRef,
         encode_gamma_denom: FiniteNonZeroF64,
@@ -33,9 +30,7 @@ pub trait IImageEncoderWithProgress<TImageIterRef, TPixels, TPixel>: Debug
 where
     TImageIterRef: Iterator<Item = TPixels> + ExactSizeIterator,
     TPixels: AsRef<[TPixel]>,
-    TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
-    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
-    <TPixel as IntoIterator>::Item: Display, {
+    TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
     fn encode_with_progress<TOutputDevice, TStatusDevice>(
         iter: TImageIterRef,
         encode_gamma_denom: FiniteNonZeroF64,
@@ -49,8 +44,7 @@ where
 
 pub trait IPixelEncoder<'a, TPixel>: Debug
 where
-    TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>,
-    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>, {
+    TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
     fn encode<TOutputDevice>(pixel: &'a TPixel, output_device: &mut TOutputDevice) -> Result<()>
     where
         TOutputDevice: Write;

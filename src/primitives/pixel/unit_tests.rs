@@ -4,7 +4,6 @@ mod new;
 mod into_iter;
 mod i_pixel_ext;
 mod i_rgb_pixel;
-mod from;
 
 use super::*;
 use std::mem;

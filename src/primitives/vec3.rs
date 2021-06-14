@@ -1,17 +1,19 @@
 #[cfg(test)]
 mod unit_tests;
 
-use crate::{consts::*, traits::ITriplet};
+use crate::{
+    consts::*,
+    traits::{IRandomConstructors, ITriplet},
+};
 use bool_ext::BoolExt;
 use derive_more::{Add, AddAssign, Neg, Sub, SubAssign};
 use num_traits::One;
+use rand::{thread_rng, Rng};
 use std::{
     array,
-    ops::{Div, DivAssign, Index, Mul, MulAssign},
+    fmt::{self, Display},
+    ops::{Div, DivAssign, Index, Mul, MulAssign, RangeInclusive},
 };
-use crate::traits::IRandomConstructors;
-use rand::{thread_rng, Rng};
-use std::ops::RangeInclusive;
 
 #[derive(Add, AddAssign, Clone, Copy, Debug, Default, Neg, PartialEq, Sub, SubAssign)]
 pub struct Vec3 {
@@ -53,6 +55,12 @@ impl Vec3 {
                 Self { x: root_one_third, y: root_one_third, z: root_one_third }
             },
         )
+    }
+}
+
+impl Display for Vec3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[x: {}, y: {}, z: {}]", self.x(), self.y(), self.z())
     }
 }
 
@@ -137,7 +145,9 @@ impl IRandomConstructors for Vec3 {
 
         loop {
             let candidate = Self::new(rng.gen_range(RANGE), rng.gen_range(RANGE), rng.gen_range(RANGE));
-            if candidate.length_squared() < 1.0 { break candidate }
+            if candidate.length_squared() < 1.0 {
+                break candidate;
+            }
         }
     }
 }
