@@ -3,15 +3,13 @@ mod unit_tests;
 
 use crate::{
     adapters::encoders::pixel::U8,
-    consts::msg,
-    traits::{IEncoder, IEncoderProgress, IImage, IRgbPixel},
+    consts::*,
+    finite_non_zero_float::FiniteNonZeroF64,
+    traits::{IImageEncoder, IImageEncoderWithProgress, IPixel, IPixelEncoder},
     Result,
 };
 use conv::ValueFrom;
-use std::{
-    cmp::max,
-    io::{sink, Write},
-};
+use std::{cmp::max, fmt::Display, io::Write, num::NonZeroUsize, ops::Div};
 
 #[derive(Debug)]
 pub struct Ppm;
@@ -20,22 +18,28 @@ impl Ppm {
     #[must_use]
     pub const fn new() -> Self { Self {} }
 
-    fn write_header<TOutputDevice, TImage>(output_device: &mut TOutputDevice, image: &TImage) -> Result<()>
+    fn write_header<TOutputDevice>(
+        output_device: &mut TOutputDevice,
+        width: NonZeroUsize,
+        height: NonZeroUsize,
+    ) -> Result<()>
     where
-        TOutputDevice: Write,
-        TImage: IImage, {
-        Ok(writeln!(output_device, "P3\n{} {}\n255", image.width().get(), image.height().get())?)
+        TOutputDevice: Write, {
+        Ok(writeln!(output_device, "P3\n{} {}\n255", width, height)?)
     }
 
-    fn write_pixel_row<'p, TOutputDevice, TPixel, TRow>(
+    fn write_pixel_row<TOutputDevice, TPixel, TPixels>(
+        pixels: TPixels,
+        encode_gamma_denom: FiniteNonZeroF64,
         output_device: &mut TOutputDevice,
-        mut pixels: TRow,
     ) -> Result<()>
     where
         TOutputDevice: Write,
-        TPixel: IRgbPixel + 'p,
-        TRow: Iterator<Item = &'p TPixel>, {
-        pixels.try_for_each(|pixel| U8::encode(pixel, output_device))
+        TPixels: AsRef<[TPixel]>,
+        TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
+        <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
+        <TPixel as IntoIterator>::Item: Display, {
+        pixels.as_ref().iter().try_for_each(|&pixel| U8::encode(&(pixel / encode_gamma_denom.get()), output_device))
     }
 
     fn write_status<TStatusDevice>(current: usize, max_value: usize, status_device: &mut TStatusDevice) -> Result<()>
@@ -47,40 +51,47 @@ impl Ppm {
     }
 }
 
-impl<TImage> IEncoder<TImage> for Ppm
+impl<TImageIterRef, TPixels, TPixel> IImageEncoder<TImageIterRef, TPixels, TPixel> for Ppm
 where
-    TImage: IImage,
-    <TImage as IImage>::Pixel: IRgbPixel,
+    TImageIterRef: Iterator<Item = TPixels> + ExactSizeIterator,
+    TPixels: AsRef<[TPixel]>,
+    TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
+    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
+    <TPixel as IntoIterator>::Item: Display,
 {
-    fn encode<TOutputDevice>(source: &TImage, output_device: &mut TOutputDevice) -> Result<()>
-    where
-        TOutputDevice: Write, {
-        <Self as IEncoderProgress<TImage>>::encode(source, output_device, &mut sink())
-    }
 }
 
-impl<TImage> IEncoderProgress<TImage> for Ppm
+impl<TImageIterRef, TPixels, TPixel> IImageEncoderWithProgress<TImageIterRef, TPixels, TPixel> for Ppm
 where
-    TImage: IImage,
-    <TImage as IImage>::Pixel: IRgbPixel,
+    TImageIterRef: Iterator<Item = TPixels> + ExactSizeIterator,
+    TPixels: AsRef<[TPixel]>,
+    TPixel: IPixel + Div<f64, Output = TPixel> + IntoIterator<Item = <TPixel as IPixel>::Value>,
+    <TPixel as IPixel>::Value: Div<f64, Output = <TPixel as IPixel>::Value>,
+    <TPixel as IntoIterator>::Item: Display,
 {
-    fn encode<TOutputDevice, TStatusDevice>(
-        image: &TImage,
+    fn encode_with_progress<TOutputDevice, TStatusDevice>(
+        iter: TImageIterRef,
+        encode_gamma_denom: FiniteNonZeroF64,
         output_device: &mut TOutputDevice,
         status_device: &mut TStatusDevice,
     ) -> Result<()>
     where
         TOutputDevice: Write,
         TStatusDevice: Write, {
-        Self::write_header(output_device, image)?;
-
-        let row_count = image.height().get();
-        image.row_iter().enumerate().try_for_each(|(row, pixels)| {
-            Self::write_status(row, row_count, status_device)?;
-            Self::write_pixel_row(output_device, pixels.iter())
-        })?;
-        output_device.flush()?;
-        status_device.flush()?;
-        Ok(())
+        let mut iter = iter.peekable();
+        let (width, height) = (
+            iter.peek().and_then(|row| NonZeroUsize::new(row.as_ref().len())).unwrap_or_else(|| {
+                unreachable!("{} {}", msg::WIDTH, msg::ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO)
+            }),
+            NonZeroUsize::new(iter.len()).unwrap_or_else(|| {
+                unreachable!("{} {}", msg::HEIGHT, msg::ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO)
+            }),
+        );
+        Self::write_header(output_device, width, height)?;
+        let height = iter.len();
+        iter.enumerate().try_for_each(|(row, pixels)| {
+            Self::write_status(row, height, status_device)?;
+            Self::write_pixel_row(pixels, encode_gamma_denom, output_device)
+        })
     }
 }

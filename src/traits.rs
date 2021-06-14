@@ -6,7 +6,7 @@ mod i_random_constructors;
 mod i_render;
 mod i_triplet;
 
-pub use i_encoder::{IEncoder, IEncoderProgress};
+pub use i_encoder::{IImageEncoder, IImageEncoderWithProgress, IPixelEncoder};
 pub use i_image::IImage;
 pub use i_intersect::IIntersect;
 pub use i_pixel::{IPixel, IPixelExt, IRgbPixel};

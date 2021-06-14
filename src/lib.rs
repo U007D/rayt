@@ -1,4 +1,11 @@
-#![feature(associated_type_defaults, backtrace, const_option, generic_associated_types)]
+#![feature(
+    associated_type_defaults,
+    backtrace,
+    const_float_classify,
+    const_fn_floating_point_arithmetic,
+    const_option,
+    generic_associated_types
+)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::unreadable_literal, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(
@@ -35,6 +42,7 @@ mod args;
 mod camera;
 pub mod consts;
 pub mod error;
+mod finite_non_zero_float;
 mod image;
 mod intersect_record;
 mod primitives;
@@ -46,7 +54,7 @@ use crate::{
     adapters::encoders::image::Ppm,
     consts::*,
     scene::Scene,
-    traits::{IEncoderProgress, IRenderProgress},
+    traits::{IImage, IImageEncoderWithProgress, IRenderProgress},
 };
 pub use crate::{
     args::Args,
@@ -63,6 +71,6 @@ pub fn lib_main(args: Args) -> Result<()> {
     let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
     Scene::new().render(&mut image, AA_SAMPLE_FACTOR, &mut status_device)?;
-    Ppm::encode(&image, &mut output_device, &mut status_device)?;
+    Ppm::encode_with_progress(image.iter(), VISUAL_GAMMA, &mut output_device, &mut status_device)?;
     Ok(())
 }

@@ -8,10 +8,9 @@ fn try_value_from_usize__valid_usize_succeeds() {
     // Given
     let expected = Ok(42_f64);
     let input = 42_usize;
-    let pixel = Pixel::default();
 
     // When
-    let result = pixel.try_value_from_usize(input);
+    let result = Pixel::try_value_from_usize(input);
 
     // Then
     assert!(result == expected);
@@ -24,10 +23,9 @@ fn try_value_from_usize__invalid_usize_fails() {
     // Given
     let expected = Error::ConversionError(String::new());
     let input = (1_usize << 53) + 1;
-    let pixel = Pixel::default();
 
     // When
-    let result = pixel.try_value_from_usize(input);
+    let result = Pixel::try_value_from_usize(input);
 
     // Then
     assert!(mem::discriminant(&result.unwrap_err()) == mem::discriminant(&expected));
@@ -38,10 +36,9 @@ fn try_value_from_f64__valid_usize_succeeds() {
     // Given
     let expected = Ok(42_f64);
     let input = 42_f64;
-    let pixel = Pixel::default();
 
     // When
-    let result = pixel.try_value_from_f64(input);
+    let result = Pixel::try_value_from_f64(input);
 
     // Then
     assert!(result == expected);

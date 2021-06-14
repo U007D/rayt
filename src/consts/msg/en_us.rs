@@ -19,3 +19,4 @@ pub const ERR_CHANNEL_OVERFLOW: &str = "Error: Value overflows channel";
 pub const R: &str = "r";
 pub const G: &str = "g";
 pub const B: &str = "b";
+pub const INTERNAL_ERR_NON_ZERO_TYPE_CONTAINS_ZERO_VALUE: &str = "Internal error: NonZero type contains a zero value";

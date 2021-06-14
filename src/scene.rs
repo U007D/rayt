@@ -81,7 +81,7 @@ impl IRenderProgress for Scene {
         let image_width = image.width().get();
         let aa_sample_factor = aa_sample_factor.get();
         let row_count = image.height().get();
-        image.row_iter_mut().rev().enumerate().try_for_each(|(row, pixels)| {
+        image.iter_mut().rev().enumerate().try_for_each(|(row, pixels)| {
             Self::write_status(row, row_count, &mut status_device)?;
             pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
                 let acc_color = (0..aa_sample_factor).try_fold(Vec3::from(pixel.rgb()), |acc, _| {
@@ -95,7 +95,7 @@ impl IRenderProgress for Scene {
                     Ok::<_, Error>(acc + Vec3::from(ray.color(&world, MAX_RENDER_DEPTH)?.rgb()))
                 })?;
                 let color = acc_color / <Pixel as IPixelExt>::try_value_from_usize(aa_sample_factor)?;
-                pixel.set(color.x().sqrt(), color.y().sqrt(), color.z().sqrt())?;
+                pixel.set(color.x(), color.y(), color.z())?;
                 Ok::<_, Error>(())
             })
         })

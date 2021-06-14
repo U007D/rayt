@@ -49,10 +49,10 @@ fn row_iter__yields_expected_rows_of_pixels() {
     };
 
     // When
-    let result = image.row_iter();
+    let result = image.iter();
 
     // Then
-    assert!(result.eq(expected.iter()), "{:?}\n==\n{:?}\nis false", image.row_iter(), expected);
+    assert!(result.eq(expected.iter()), "{:?}\n==\n{:?}\nis false", image.iter(), expected);
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn row_iter__rows_are_expected_count_and_width() {
     let image = Image::new(3.try_into().unwrap(), 2.try_into().unwrap()).unwrap();
 
     // When
-    let result = image.row_iter();
+    let result = image.iter();
 
     // Then
     assert!(result.len() == expected_row_count);
@@ -88,7 +88,7 @@ fn row_iter_mut__allows_mutation_of_pixels() {
     let width = image.width().get();
 
     // When
-    let pixel_rows = image.row_iter_mut();
+    let pixel_rows = image.iter_mut();
     pixel_rows.enumerate().for_each(|(row_count, pixel_cols)| {
         pixel_cols.iter_mut().enumerate().for_each(|(col_count, pixel)| {
             let count = row_count * width + col_count;
@@ -96,10 +96,10 @@ fn row_iter_mut__allows_mutation_of_pixels() {
             pixel.set(value, value, value).unwrap();
         });
     });
-    let result = image.row_iter();
+    let result = image.iter();
 
     // Then
-    assert!(result.eq(expected.iter()), "{:?}\n==\n{:?}\nis false", image.row_iter(), expected);
+    assert!(result.eq(expected.iter()), "{:?}\n==\n{:?}\nis false", image.iter(), expected);
 }
 
 #[test]
@@ -111,7 +111,7 @@ fn row_iter_mut__rows_are_expected_count_and_width() {
     let mut image = Image::new(3.try_into().unwrap(), 2.try_into().unwrap()).unwrap();
 
     // When
-    let result = image.row_iter_mut();
+    let result = image.iter_mut();
 
     // Then
     assert!(result.len() == expected_row_count);

@@ -2,7 +2,7 @@
 
 use assert2::assert;
 use super::*;
-use crate::Pixel;
+use crate::primitives::Pixel;
 use crate::traits::IPixel;
 use std::str::from_utf8;
 

@@ -1,10 +1,9 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
-use assert2::assert;
 use super::*;
-use crate::Image;
-use std::convert::TryInto;
-use std::str::from_utf8;
+use crate::{traits::{IImage, IRgbPixel}, Image};
+use assert2::assert;
+use std::{convert::TryInto, io::sink, str::from_utf8};
 
 #[test]
 fn encode__encodes_expected_image_data() {
@@ -20,7 +19,7 @@ fn encode__encodes_expected_image_data() {
         temp
     };
     // When
-    let result = <Ppm as IEncoder<_>>::encode(&image, &mut buffer);
+    let result = Ppm::encode(image.iter(), VISUAL_GAMMA, &mut buffer);
 
     // Then
     assert!(result.is_ok(), "{:?}", result);
@@ -41,7 +40,7 @@ fn encode_progress__encodes_expected_image_data() {
         temp
     };
     // When
-    let result = <Ppm as IEncoderProgress<_>>::encode(&image, &mut buffer, &mut sink());
+    let result = Ppm::encode_with_progress(image.iter(), VISUAL_GAMMA, &mut buffer, &mut sink());
 
     // Then
     assert!(result.is_ok(), "{:?}", result);
@@ -61,7 +60,7 @@ fn encode_progress__emits_progress_data() {
         temp
     };
     // When
-    let result = <Ppm as IEncoderProgress<_>>::encode(&image, &mut sink(), &mut buffer);
+    let result = Ppm::encode_with_progress(image.iter(), VISUAL_GAMMA, &mut sink(), &mut buffer);
 
     // Then
     assert!(result.is_ok(), "{:?}", result);

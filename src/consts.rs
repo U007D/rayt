@@ -1,4 +1,5 @@
 use std::num::NonZeroUsize;
+use crate::finite_non_zero_float::FiniteNonZeroF64;
 
 pub mod msg;
 
@@ -9,8 +10,7 @@ pub(crate) struct Image {
 
 pub const ASPECT_RATIO: f64 = 16.0 / 9.0;
 #[allow(clippy::unwrap_used)]
-// In const context, `unwrap()` halts compilation instead of panicking at runtime.  Its use below is
-// exclusively in const context and is consistent with the principle of writing panic-free code.
+// No panics here; in `const` context, unwrap halts compilation.
 #[allow(clippy::unwrap_used)]
 pub const AA_SAMPLE_FACTOR: NonZeroUsize = NonZeroUsize::new(100).unwrap();
 pub const DISTINCT_U8_VALUES: f64 = 256.0;
@@ -30,3 +30,6 @@ const IMAGE_HEIGHT: NonZeroUsize = NonZeroUsize::new(
 )
 .unwrap();
 pub const MAX_RENDER_DEPTH: usize = 50;
+// No panics here; in `const` context, unwrap halts compilation.
+#[allow(clippy::unwrap_used)]
+pub const VISUAL_GAMMA: FiniteNonZeroF64 = FiniteNonZeroF64::new(2.2).unwrap();

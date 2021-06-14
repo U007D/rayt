@@ -48,12 +48,12 @@ impl IImage for Image {
     fn height(&self) -> NonZeroUsize { self.height }
 
     #[must_use]
-    fn row_iter(&self) -> Self::IterRef<'_> {
+    fn iter(&self) -> Self::IterRef<'_> {
         Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() }
     }
 
     #[must_use]
-    fn row_iter_mut(&mut self) -> IterMut<'_> {
+    fn iter_mut(&mut self) -> IterMut<'_> {
         let height = self.height();
         IterMut { pixels: self.pixels.chunks_mut(self.width.get()), len: height }
     }

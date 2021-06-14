@@ -12,6 +12,7 @@ use bool_ext::BoolExt;
 use conv::ValueFrom;
 use derive_more::{Add, AddAssign, Deref, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 use std::{array, ops::Mul};
+use std::ops::Div;
 
 #[derive(
     Add, AddAssign, Clone, Copy, Debug, Default, Deref, Div, DivAssign, Mul, MulAssign, Neg, PartialEq, Sub, SubAssign,
@@ -101,3 +102,13 @@ impl Mul<Pixel> for <Pixel as IPixel>::Value {
 
     fn mul(self, rhs: Pixel) -> Self::Output { rhs * self }
 }
+
+// For encoding gamma
+impl Div<f64> for &'_ Pixel {
+    type Output = Pixel;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        Pixel::new(self.r() / rhs, self.g() / rhs, self.b() / rhs).expect(msg::ERR_CHANNEL_OVERFLOW)
+    }
+}
+
