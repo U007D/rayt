@@ -23,7 +23,7 @@ fn valid_r_valid_g_valid_b_succeeds() {
 fn invalid_r_valid_g_valid_b_gives_conversion_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
+    let r = 1.1;
     let g = 0.5;
     let b = 0.25;
     let sut = Pixel::new;
@@ -40,7 +40,7 @@ fn valid_r_invalid_g_valid_b_gives_conversion_error() {
     // Given
     let expected = Error::ConversionError(String::new());
     let r = 0.5;
-    let g = 1.0;
+    let g = 1.1;
     let b = 0.25;
     let sut = Pixel::new;
 
@@ -57,7 +57,7 @@ fn valid_r_valid_g_invalid_b_gives_conversion_error() {
     let expected = Error::ConversionError(String::new());
     let r = 0.5;
     let g = 0.25;
-    let b = 1.0;
+    let b = 1.1;
     let sut = Pixel::new;
 
     // When
@@ -71,8 +71,8 @@ fn valid_r_valid_g_invalid_b_gives_conversion_error() {
 fn invalid_r_invalid_g_valid_b_gives_conversion_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
-    let g = 1.0;
+    let r = 1.1;
+    let g = 1.1;
     let b = 0.25;
     let sut = Pixel::new;
 
@@ -88,8 +88,8 @@ fn valid_r_invalid_g_invalid_b_gives_conversion_error() {
     // Given
     let expected = Error::ConversionError(String::new());
     let r = 0.25;
-    let g = 1.0;
-    let b = 1.0;
+    let g = 1.1;
+    let b = 1.1;
     let sut = Pixel::new;
 
     // When
@@ -103,9 +103,9 @@ fn valid_r_invalid_g_invalid_b_gives_conversion_error() {
 fn invalid_r_valid_g_invalid_b_gives_conversion_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
+    let r = 1.1;
     let g = 0.25;
-    let b = 1.0;
+    let b = 1.1;
     let sut = Pixel::new;
 
     // When
@@ -119,9 +119,9 @@ fn invalid_r_valid_g_invalid_b_gives_conversion_error() {
 fn invalid_r_invalid_g_invalid_b_gives_conversion_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
-    let g = 1.0;
-    let b = 1.0;
+    let r = 1.1;
+    let g = 1.1;
+    let b = 1.1;
     let sut = Pixel::new;
 
     // When

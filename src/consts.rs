@@ -32,4 +32,8 @@ const IMAGE_HEIGHT: NonZeroUsize = NonZeroUsize::new(
 pub const MAX_RENDER_DEPTH: usize = 50;
 // No panics here; in `const` context, unwrap halts compilation.
 #[allow(clippy::unwrap_used)]
-pub const VISUAL_GAMMA: FiniteNonZeroF64 = FiniteNonZeroF64::new(2.2).unwrap();
+pub const GAMMA_1_0: FiniteNonZeroF64 = FiniteNonZeroF64::new(1.0).unwrap();
+#[allow(clippy::unwrap_used)]
+pub const GAMMA_1_8: FiniteNonZeroF64 = FiniteNonZeroF64::new(1.8).unwrap();
+#[allow(clippy::unwrap_used)]
+pub const GAMMA_2_2: FiniteNonZeroF64 = FiniteNonZeroF64::new(2.2).unwrap();

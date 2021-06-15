@@ -72,15 +72,16 @@ where
     where
         TOutputDevice: Write,
         TStatusDevice: Write, {
+        // `peek()`ing an iterator adds to its length (!), so cache true height value before `peek()`ing
+        let height = NonZeroUsize::new(iter.len())
+            .unwrap_or_else(|| unreachable!("{} {}", msg::HEIGHT, msg::ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO));
+
         let mut iter = iter.peekable();
-        let (width, height) = (
-            iter.peek().and_then(|row| NonZeroUsize::new(row.as_ref().len())).unwrap_or_else(|| {
-                unreachable!("{} {}", msg::WIDTH, msg::ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO)
-            }),
-            NonZeroUsize::new(iter.len()).unwrap_or_else(|| {
-                unreachable!("{} {}", msg::HEIGHT, msg::ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO)
-            }),
-        );
+        let width = iter
+            .peek()
+            .and_then(|row| NonZeroUsize::new(row.as_ref().len()))
+            .unwrap_or_else(|| unreachable!("{} {}", msg::WIDTH, msg::ERR_INTERNAL_VALUE_MUST_BE_GREATER_THAN_ZERO));
+
         Self::write_header(output_device, width, height)?;
         let height = iter.len();
         iter.enumerate().try_for_each(|(row, pixels)| {

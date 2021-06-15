@@ -71,7 +71,7 @@ fn set__valid_triplet_writes_expected_values() {
 fn set__invalid_triplet_r_returns_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
+    let r = 1.1;
     let g = 0.0;
     let b = 0.0;
     let mut pixel = Pixel::default();
@@ -89,7 +89,7 @@ fn set__invalid_triplet_g_returns_error() {
     // Given
     let expected = Error::ConversionError(String::new());
     let r = 0.0;
-    let g = 1.0;
+    let g = 1.1;
     let b = 0.0;
     let mut pixel = Pixel::default();
 
@@ -107,7 +107,7 @@ fn set__invalid_triplet_b_returns_error() {
     let expected = Error::ConversionError(String::new());
     let r = 0.0;
     let g = 0.0;
-    let b = 1.0;
+    let b = 1.1;
     let mut pixel = Pixel::default();
 
     // When
@@ -122,8 +122,8 @@ fn set__invalid_triplet_b_returns_error() {
 fn set__invalid_triplet_rb_returns_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
-    let g = 1.0;
+    let r = 1.1;
+    let g = 1.1;
     let b = 0.0;
     let mut pixel = Pixel::default();
 
@@ -139,9 +139,9 @@ fn set__invalid_triplet_rb_returns_error() {
 fn set__invalid_triplet_rg_returns_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
+    let r = 1.1;
     let g = 0.0;
-    let b = 1.0;
+    let b = 1.1;
     let mut pixel = Pixel::default();
 
     // When
@@ -157,8 +157,8 @@ fn set__invalid_triplet_bg_returns_error() {
     // Given
     let expected = Error::ConversionError(String::new());
     let r = 0.0;
-    let g = 1.0;
-    let b = 1.0;
+    let g = 1.1;
+    let b = 1.1;
     let mut pixel = Pixel::default();
 
     // When
@@ -173,9 +173,9 @@ fn set__invalid_triplet_bg_returns_error() {
 fn set__invalid_triplet_rbg_returns_error() {
     // Given
     let expected = Error::ConversionError(String::new());
-    let r = 1.0;
-    let g = 1.0;
-    let b = 1.0;
+    let r = 1.1;
+    let g = 1.1;
+    let b = 1.1;
     let mut pixel = Pixel::default();
 
     // When

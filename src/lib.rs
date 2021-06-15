@@ -71,6 +71,6 @@ pub fn lib_main(args: Args) -> Result<()> {
     let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
     Scene::new().render(&mut image, AA_SAMPLE_FACTOR, &mut status_device)?;
-    Ppm::encode_with_progress(image.iter(), VISUAL_GAMMA, &mut output_device, &mut status_device)?;
+    Ppm::encode_with_progress(image.iter(), GAMMA_2_2, &mut output_device, &mut status_device)?;
     Ok(())
 }
