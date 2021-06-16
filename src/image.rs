@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod unit_tests;
 
-use crate::{traits::IImage, Error, primitives::Pixel, Result};
+use crate::{primitives::Pixel, traits::IImage, Error, Result};
 use std::{
     num::NonZeroUsize,
     slice::{Chunks, ChunksMut},
@@ -48,9 +48,7 @@ impl IImage for Image {
     fn height(&self) -> NonZeroUsize { self.height }
 
     #[must_use]
-    fn iter(&self) -> Self::IterRef<'_> {
-        Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() }
-    }
+    fn iter(&self) -> Self::IterRef<'_> { Iter { pixels: self.pixels.chunks(self.width.get()), len: self.height() } }
 
     #[must_use]
     fn iter_mut(&mut self) -> IterMut<'_> {

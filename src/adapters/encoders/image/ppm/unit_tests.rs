@@ -1,7 +1,10 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
 use super::*;
-use crate::{traits::{IImage, IRgbPixel}, Image};
+use crate::{
+    traits::{IImage, IRgbPixel},
+    Image,
+};
 use assert2::assert;
 use std::{convert::TryInto, io::sink, str::from_utf8};
 

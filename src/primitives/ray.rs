@@ -24,7 +24,7 @@ impl Ray {
         (depth > 0).map_or_else(
             || Ok(Pixel::default()),
             || {
-                world.nearest_intersection(self, 0.000_1..=f64::INFINITY).map_or_else(
+                world.nearest_intersection(self, 0.000_000_01..=f64::INFINITY).map_or_else(
                     || {
                         let unit_direction = self.direction().unit_vector();
                         let t = 0.5 * (unit_direction.y() + 1.0);

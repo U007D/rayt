@@ -43,6 +43,7 @@ mod camera;
 pub mod consts;
 pub mod error;
 mod finite_non_zero_float;
+mod gamma;
 mod image;
 mod intersect_record;
 mod primitives;
@@ -59,6 +60,7 @@ use crate::{
 pub use crate::{
     args::Args,
     error::{Error, Result},
+    gamma::Gamma,
     image::Image,
 };
 use std::{
@@ -71,6 +73,6 @@ pub fn lib_main(args: Args) -> Result<()> {
     let mut status_device = stdout();
     let mut image = Image::new(IMAGE.width, IMAGE.height)?;
     Scene::new().render(&mut image, AA_SAMPLE_FACTOR, &mut status_device)?;
-    Ppm::encode_with_progress(image.iter(), GAMMA_2_2, &mut output_device, &mut status_device)?;
+    Ppm::encode_with_progress(image.iter(), Gamma::DisplayMean22, &mut output_device, &mut status_device)?;
     Ok(())
 }

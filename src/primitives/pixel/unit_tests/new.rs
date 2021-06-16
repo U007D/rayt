@@ -1,7 +1,7 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
-use assert2::assert;
 use super::*;
+use assert2::assert;
 
 #[test]
 fn valid_r_valid_g_valid_b_succeeds() {

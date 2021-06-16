@@ -1,13 +1,7 @@
 #[cfg(test)]
 mod unit_tests;
 
-use crate::{
-    adapters::encoders::pixel::U8,
-    consts::*,
-    finite_non_zero_float::FiniteNonZeroF64,
-    traits::{IImageEncoder, IImageEncoderWithProgress, IPixel, IPixelEncoder},
-    Result,
-};
+use crate::{adapters::encoders::pixel::U8, consts::*, traits::{IImageEncoder, IImageEncoderWithProgress, IPixel, IPixelEncoder}, Result, Gamma};
 use conv::ValueFrom;
 use std::{cmp::max, io::Write, num::NonZeroUsize};
 
@@ -30,14 +24,14 @@ impl Ppm {
 
     fn write_pixel_row<TOutputDevice, TPixel, TPixels>(
         pixels: TPixels,
-        encode_gamma_denom: FiniteNonZeroF64,
+        encode_gamma: Gamma,
         output_device: &mut TOutputDevice,
     ) -> Result<()>
     where
         TOutputDevice: Write,
         TPixels: AsRef<[TPixel]>,
         TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
-        pixels.as_ref().iter().try_for_each(|&pixel| U8::encode(&(pixel / encode_gamma_denom.get()), output_device))
+        pixels.as_ref().iter().try_for_each(|&pixel| U8::encode(&(pixel.pow(1.0 / encode_gamma.value().get())), output_device))
     }
 
     fn write_status<TStatusDevice>(current: usize, max_value: usize, status_device: &mut TStatusDevice) -> Result<()>
@@ -65,7 +59,7 @@ where
 {
     fn encode_with_progress<TOutputDevice, TStatusDevice>(
         iter: TImageIterRef,
-        encode_gamma_denom: FiniteNonZeroF64,
+        encode_gamma: Gamma,
         output_device: &mut TOutputDevice,
         status_device: &mut TStatusDevice,
     ) -> Result<()>
@@ -86,7 +80,7 @@ where
         let height = iter.len();
         iter.enumerate().try_for_each(|(row, pixels)| {
             Self::write_status(row, height, status_device)?;
-            Self::write_pixel_row(pixels, encode_gamma_denom, output_device)
+            Self::write_pixel_row(pixels, encode_gamma, output_device)
         })
     }
 }

@@ -1,6 +1,5 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
-mod i_triplet;
 mod add;
 mod add_assign;
 mod cross;
@@ -8,6 +7,7 @@ mod default;
 mod div;
 mod div_assign;
 mod dot;
+mod i_triplet;
 mod index;
 mod into_iter;
 mod length;

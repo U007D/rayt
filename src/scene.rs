@@ -31,14 +31,11 @@ impl Scene {
         world
     }
 
-    fn write_status<TStatusDevice>(
-        current: usize,
-        max_value: usize,
-        status_device: &mut TStatusDevice,
-    ) -> Result<()>
+    fn write_status<TStatusDevice>(current: usize, max_value: usize, status_device: &mut TStatusDevice) -> Result<()>
     where
         TStatusDevice: Write, {
-        let percent_progress = f32::value_from(current)? / f32::value_from(max(max_value.saturating_sub(1), 1))? * 100.0;
+        let percent_progress =
+            f32::value_from(current)? / f32::value_from(max(max_value.saturating_sub(1), 1))? * 100.0;
         write!(status_device, "\r{}: {:.0}%", msg::RENDER_PROGRESS, percent_progress)?;
         Ok(())
     }

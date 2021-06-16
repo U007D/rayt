@@ -1,9 +1,8 @@
 #![allow(non_snake_case, clippy::unwrap_used)]
 
-use assert2::assert;
 use super::*;
-use crate::primitives::Pixel;
-use crate::traits::IPixel;
+use crate::{primitives::Pixel, traits::IPixel};
+use assert2::assert;
 use std::str::from_utf8;
 
 #[test]

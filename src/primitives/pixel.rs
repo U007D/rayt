@@ -10,30 +10,16 @@ use crate::{
 };
 use bool_ext::BoolExt;
 use conv::ValueFrom;
-use derive_more::{Add, AddAssign, Deref, Display, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use derive_more::{Add, AddAssign, Deref, Display, Mul, MulAssign};
+use num_traits::Pow;
 use std::{
     array,
+    num::NonZeroUsize,
     ops::{Div, Mul},
 };
 
-#[derive(
-    Add,
-    AddAssign,
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Deref,
-    Display,
-    Div,
-    DivAssign,
-    Mul,
-    MulAssign,
-    Neg,
-    PartialEq,
-    Sub,
-    SubAssign,
-)]
+#[derive(Add, AddAssign, Clone, Copy, Debug, Default, Deref, Display, Mul, MulAssign, PartialEq)]
+#[mul(forward)]
 pub struct Pixel(Vec3);
 
 impl Pixel {
@@ -75,6 +61,9 @@ impl IntoIterator for Pixel {
 impl IPixel for Pixel {
     type Value = <Vec3 as ITriplet>::Value;
 
+    // No panics here; in `const` context, `unwrap()` failure halts compilation.
+    #[allow(clippy::unwrap_used)]
+    const CHANNEL_COUNT: NonZeroUsize = NonZeroUsize::new(3).unwrap();
     const MAX: Self::Value = 1.0;
     const MIN: Self::Value = 0.0;
 }
@@ -103,6 +92,24 @@ impl IRgbPixel for Pixel {
     }
 }
 
+impl Mul<f64> for Pixel {
+    type Output = Self;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Self::new(self.r() * rhs, self.g() * rhs, self.b() * rhs).unwrap_or_else(|err| panic!("{}", err))
+    }
+}
+
+impl Pow<f64> for Pixel {
+    type Output = Self;
+
+    fn pow(self, rhs: f64) -> Self::Output {
+        Self::new(self.r().pow(rhs), self.g().pow(rhs), self.b().pow(rhs)).expect(msg::ERR_CHANNEL_OVERFLOW)
+    }
+}
+
+// Impls on foreign types
+
 impl Mul<Pixel> for <Pixel as IPixel>::Value {
     type Output = Pixel;
 
@@ -110,10 +117,10 @@ impl Mul<Pixel> for <Pixel as IPixel>::Value {
 }
 
 // For encoding gamma
-impl Div<f64> for &'_ Pixel {
-    type Output = Pixel;
+impl Div<f64> for Pixel {
+    type Output = Self;
 
     fn div(self, rhs: f64) -> Self::Output {
-        Pixel::new(self.r() / rhs, self.g() / rhs, self.b() / rhs).expect(msg::ERR_CHANNEL_OVERFLOW)
+        Self::new(self.r() / rhs, self.g() / rhs, self.b() / rhs).expect(msg::ERR_CHANNEL_OVERFLOW)
     }
 }

@@ -1,10 +1,21 @@
 use crate::Result;
-use num_traits::{MulAdd, Num};
-use std::fmt::{Debug, Display};
-use std::ops::Div;
+use num_traits::{MulAdd, Num, Pow};
+use std::{
+    fmt::{Debug, Display},
+    num::NonZeroUsize,
+    ops::Div,
+};
 
-pub trait IPixel: Copy + Debug + Display + Div<f64, Output = Self> {
-    type Value: Num + Copy + Debug + Display + Div<f64, Output = Self::Value> + MulAdd + PartialOrd;
+pub trait IPixel: Copy + Debug + Display + Div<f64, Output = Self> + IntoIterator + Pow<f64, Output = Self> {
+    type Value: Num
+        + Copy
+        + Debug
+        + Display
+        + Div<f64, Output = Self::Value>
+        + MulAdd
+        + Pow<f64, Output = Self::Value>
+        + PartialOrd;
+    const CHANNEL_COUNT: NonZeroUsize;
     const MAX: Self::Value;
     const MIN: Self::Value;
     // TODO: Figure out how to implement contract bound on associated consts

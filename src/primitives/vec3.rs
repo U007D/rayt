@@ -6,8 +6,7 @@ use crate::{
     traits::{IRandomConstructors, ITriplet},
 };
 use bool_ext::BoolExt;
-use derive_more::{Add, AddAssign, Neg, Sub, SubAssign};
-use num_traits::One;
+use derive_more::{Add, AddAssign, Mul, Neg, Rem, RemAssign, Sub, SubAssign};
 use rand::{thread_rng, Rng};
 use std::{
     array,
@@ -15,7 +14,8 @@ use std::{
     ops::{Div, DivAssign, Index, Mul, MulAssign, RangeInclusive},
 };
 
-#[derive(Add, AddAssign, Clone, Copy, Debug, Default, Neg, PartialEq, Sub, SubAssign)]
+#[derive(Add, AddAssign, Clone, Copy, Debug, Default, Mul, Neg, PartialEq, Rem, RemAssign, Sub, SubAssign)]
+#[mul(forward)]
 pub struct Vec3 {
     x: f64,
     y: f64,
@@ -64,10 +64,7 @@ impl Display for Vec3 {
     }
 }
 
-impl Div<<Self as ITriplet>::Value> for Vec3
-where
-    <Self as ITriplet>::Value: One,
-{
+impl Div<<Self as ITriplet>::Value> for Vec3 {
     type Output = Self;
 
     fn div(self, rhs: <Self as ITriplet>::Value) -> Self::Output {

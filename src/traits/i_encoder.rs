@@ -1,4 +1,4 @@
-use crate::{finite_non_zero_float::FiniteNonZeroF64, traits::IPixel, Result};
+use crate::{traits::IPixel, Result, Gamma};
 use std::{
     fmt::Debug,
     io::{sink, Write},
@@ -12,14 +12,14 @@ where
     TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
     fn encode<TOutputDevice>(
         iter: TImageIterRef,
-        encode_gamma_denom: FiniteNonZeroF64,
+        encode_gamma: Gamma,
         output_device: &mut TOutputDevice,
     ) -> Result<()>
     where
         TOutputDevice: Write, {
         <Self as IImageEncoderWithProgress<TImageIterRef, TPixels, TPixel>>::encode_with_progress(
             iter,
-            encode_gamma_denom,
+            encode_gamma,
             output_device,
             &mut sink(),
         )
@@ -33,7 +33,7 @@ where
     TPixel: IPixel + IntoIterator<Item = <TPixel as IPixel>::Value>, {
     fn encode_with_progress<TOutputDevice, TStatusDevice>(
         iter: TImageIterRef,
-        encode_gamma_denom: FiniteNonZeroF64,
+        encode_gamma: Gamma,
         output_device: &mut TOutputDevice,
         status_device: &mut TStatusDevice,
     ) -> Result<()>
