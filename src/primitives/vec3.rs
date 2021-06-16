@@ -136,6 +136,11 @@ impl MulAssign<<Self as ITriplet>::Value> for Vec3 {
 }
 
 impl IRandomConstructors for Vec3 {
+    fn random_in_hemisphere(normal: &Vec3) -> Self {
+        let in_unit_sphere = Self::random_in_unit_sphere();
+        in_unit_sphere.dot(normal).is_sign_positive().map_or_else(|| -in_unit_sphere, || in_unit_sphere)
+    }
+
     fn random_in_unit_sphere() -> Self {
         const RANGE: RangeInclusive<f64> = -1.0..=1.0;
         let mut rng = thread_rng();

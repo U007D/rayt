@@ -31,7 +31,7 @@ impl Ray {
                         Ok((1.0 - t) * Pixel::max_channels() + t * Pixel::new(0.5, 0.7, 1.0)?)
                     },
                     |record| {
-                        let target = record.point3() + record.normal() + Vec3::random_in_unit_sphere();
+                        let target = record.point3() + record.normal() + Vec3::random_in_hemisphere(record.normal());
                         let (r, g, b) = (0.5
                             * Self::new(*record.point3(), target - record.point3())
                                 .color(world, depth.saturating_sub(1))?)
