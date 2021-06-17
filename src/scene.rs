@@ -82,12 +82,12 @@ impl IRenderProgress for Scene {
             Self::write_status(row, row_count, &mut status_device)?;
             pixels.iter_mut().enumerate().try_for_each(|(col, pixel)| {
                 let acc_color = (0..aa_sample_factor).try_fold(Vec3::from(pixel.rgb()), |acc, _| {
-                    let u = (<Pixel as IPixelExt>::try_value_from_usize(col)?
-                        + <Pixel as IPixelExt>::try_value_from_f64(rng.gen())?)
-                        / <Pixel as IPixelExt>::try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
-                    let v = (<Pixel as IPixelExt>::try_value_from_usize(row)?
-                        + <Pixel as IPixelExt>::try_value_from_f64(rng.gen())?)
-                        / <Pixel as IPixelExt>::try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
+                    let u = f64::value_from(col)?
+                        + rng.gen::<f64>()
+                            / <Pixel as IPixelExt>::try_value_from_usize(max(image_width.saturating_sub(1), 1))?;
+                    let v = f64::value_from(row)?
+                        + rng.gen::<f64>()
+                            / <Pixel as IPixelExt>::try_value_from_usize(max(image_height.saturating_sub(1), 1))?;
                     let ray = cam.ray(&u, &v);
                     Ok::<_, Error>(acc + Vec3::from(ray.color(&world, MAX_RENDER_DEPTH)?.rgb()))
                 })?;

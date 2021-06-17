@@ -28,7 +28,7 @@ impl Ray {
                     || {
                         let unit_direction = self.direction().unit_vector();
                         let t = 0.5 * (unit_direction.y() + 1.0);
-                        Ok((1.0 - t) * Pixel::max_channels() + t * Pixel::new(0.5, 0.7, 1.0)?)
+                        Ok((1.0 - t) * Pixel::with_maxed_channels() + t * Pixel::new(0.5, 0.7, 1.0)?)
                     },
                     |record| {
                         let target = record.point3() + record.normal() + Vec3::random_in_hemisphere(record.normal());

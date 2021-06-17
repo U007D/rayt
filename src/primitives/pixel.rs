@@ -69,12 +69,11 @@ impl IPixel for Pixel {
 }
 
 impl IPixelExt for Pixel {
-    fn max_channels() -> Self { Self(Vec3::new(<Self as IPixel>::MAX, <Self as IPixel>::MAX, <Self as IPixel>::MAX)) }
-
     fn try_value_from_usize(value: usize) -> Result<Self::Value> { Ok(<Self as IPixel>::Value::value_from(value)?) }
 
-    #[allow(clippy::useless_conversion)]
-    fn try_value_from_f64(value: f64) -> Result<Self::Value> { Ok(value.into()) }
+    fn with_maxed_channels() -> Self {
+        Self(Vec3::new(<Self as IPixel>::MAX, <Self as IPixel>::MAX, <Self as IPixel>::MAX))
+    }
 }
 
 impl IRgbPixel for Pixel {

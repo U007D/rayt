@@ -30,16 +30,3 @@ fn try_value_from_usize__invalid_usize_fails() {
     // Then
     assert!(mem::discriminant(&result.unwrap_err()) == mem::discriminant(&expected));
 }
-
-#[test]
-fn try_value_from_f64__valid_usize_succeeds() {
-    // Given
-    let expected = Ok(42_f64);
-    let input = 42_f64;
-
-    // When
-    let result = Pixel::try_value_from_f64(input);
-
-    // Then
-    assert!(result == expected);
-}

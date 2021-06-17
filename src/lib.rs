@@ -4,6 +4,7 @@
     const_float_classify,
     const_fn_floating_point_arithmetic,
     const_option,
+    const_panic,
     generic_associated_types
 )]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::unreadable_literal, rust_2018_idioms)]

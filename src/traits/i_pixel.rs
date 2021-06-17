@@ -6,7 +6,9 @@ use std::{
     ops::Div,
 };
 
-pub trait IPixel: Copy + Debug + Display + Div<f64, Output = Self> + IntoIterator + Pow<f64, Output = Self> {
+pub trait IPixel:
+    Copy + Debug + Default + Display + Div<f64, Output = Self> + IntoIterator<Item = Self::Value> + Pow<f64, Output = Self>
+{
     type Value: Num
         + Copy
         + Debug
@@ -19,14 +21,13 @@ pub trait IPixel: Copy + Debug + Display + Div<f64, Output = Self> + IntoIterato
     const MAX: Self::Value;
     const MIN: Self::Value;
     // TODO: Figure out how to implement contract bound on associated consts
-    // const MIN_MAX_INVARIANT: () = assert!(Self::MIN <= Self::MAX);
+    // const MIN_MAX_INVARIANT: () = assert!(<Self as IPixel>::MIN <= Self::MAX);
 }
 
 pub trait IPixelExt: IPixel {
     #[must_use]
-    fn max_channels() -> Self;
+    fn with_maxed_channels() -> Self;
     fn try_value_from_usize(value: usize) -> Result<Self::Value>;
-    fn try_value_from_f64(value: f64) -> Result<Self::Value>;
 }
 
 pub trait IRgbPixel: IPixel {

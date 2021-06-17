@@ -22,7 +22,7 @@ fn encode__linear_encodes_expected_image_data() {
         temp
     };
     // When
-    let result = Ppm::encode(image.iter(), GAMMA_1_0, &mut buffer);
+    let result = Ppm::encode(image.iter(), Gamma::Linear10, &mut buffer);
 
     // Then
     assert!(result.is_ok(), "{:?}", result);
@@ -43,7 +43,7 @@ fn encode_progress__linear_encodes_expected_image_data() {
         temp
     };
     // When
-    let result = Ppm::encode_with_progress(image.iter(), GAMMA_1_0, &mut buffer, &mut sink());
+    let result = Ppm::encode_with_progress(image.iter(), Gamma::Linear10, &mut buffer, &mut sink());
 
     // Then
     assert!(result.is_ok(), "{:?}", result);
@@ -63,7 +63,7 @@ fn encode_progress__linear_emits_progress_data() {
         temp
     };
     // When
-    let result = Ppm::encode_with_progress(image.iter(), GAMMA_1_0, &mut sink(), &mut buffer);
+    let result = Ppm::encode_with_progress(image.iter(), Gamma::Linear10, &mut sink(), &mut buffer);
 
     // Then
     assert!(result.is_ok(), "{:?}", result);
