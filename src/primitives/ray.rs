@@ -1,3 +1,5 @@
+mod reflected;
+
 use crate::{
     primitives::{Pixel, Point3, Vec3},
     traits::{IPixelExt, IRandomConstructors, IRgbPixel, ITriplet},
@@ -5,6 +7,7 @@ use crate::{
     Result,
 };
 use bool_ext::BoolExt;
+pub use reflected::Reflected;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Ray {

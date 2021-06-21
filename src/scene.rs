@@ -8,7 +8,10 @@ use crate::{
 };
 use conv::ValueFrom;
 
-use crate::traits::IRenderProgress;
+use crate::{
+    material::{Lambertian, Material},
+    traits::IRenderProgress,
+};
 use rand::{thread_rng, Rng};
 use std::{
     cmp::max,
@@ -26,8 +29,9 @@ impl Scene {
     #[must_use]
     fn init() -> World {
         let mut world = World::new();
-        world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
-        world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+        let albedo_1_0 = Pixel::with_maxed_channels();
+        world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5, Material::new_lambertian(albedo_1_0))));
+        world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, Material::new_lambertian(albedo_1_0))));
         world
     }
 

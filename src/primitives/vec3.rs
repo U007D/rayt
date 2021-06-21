@@ -47,6 +47,11 @@ impl Vec3 {
     pub fn length_squared(&self) -> f64 { self.x().mul_add(self.x(), self.y().mul_add(self.y(), self.z() * self.z())) }
 
     #[must_use]
+    pub fn is_near_zero(&self) -> bool {
+        self.x().abs() < ZERO_LIMIT && self.y().abs() < ZERO_LIMIT && self.z().abs() < ZERO_LIMIT
+    }
+
+    #[must_use]
     pub fn unit_vector(&self) -> Self {
         (self.length() == 0.0).map_or_else(
             || *self / self.length(),

@@ -47,6 +47,7 @@ mod finite_non_zero_float;
 mod gamma;
 mod image;
 mod intersect_record;
+mod material;
 mod primitives;
 mod scene;
 pub mod traits;

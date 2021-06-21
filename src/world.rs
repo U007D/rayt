@@ -23,7 +23,7 @@ impl World {
         self
     }
 
-    pub fn nearest_intersection(&self, ray: &Ray, t_range: RangeInclusive<f64>) -> Option<IntersectRecord> {
+    pub fn nearest_intersection(&self, ray: &Ray, t_range: RangeInclusive<f64>) -> Option<IntersectRecord<'_>> {
         self.iter().fold(None, |nearest_so_far, candidate| {
             let range = *t_range.start()
                 ..=nearest_so_far.as_ref().map_or_else(|| *t_range.end(), intersect_record::IntersectRecord::t);

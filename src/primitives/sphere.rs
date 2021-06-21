@@ -1,8 +1,4 @@
-use crate::{
-    intersect_record::IntersectRecord,
-    primitives::{Point3, Ray},
-    traits::IIntersect,
-};
+use crate::{intersect_record::IntersectRecord, material::Material, primitives::{Point3, Ray}, traits::IIntersect};
 use bool_ext::BoolExt;
 use std::ops::RangeInclusive;
 
@@ -10,11 +6,12 @@ use std::ops::RangeInclusive;
 pub struct Sphere {
     center: Point3,
     radius: f64,
+    material: Material,
 }
 
 impl Sphere {
     #[must_use]
-    pub const fn new(center: Point3, radius: f64) -> Self { Self { center, radius } }
+    pub const fn new(center: Point3, radius: f64, material: Material) -> Self { Self { center, radius, material } }
 
     #[must_use]
     pub const fn center(&self) -> &Point3 { &self.center }
@@ -24,7 +21,7 @@ impl Sphere {
 }
 
 impl IIntersect for Sphere {
-    fn intersect(&self, ray: &Ray, t_range: RangeInclusive<f64>) -> Option<IntersectRecord> {
+    fn intersect(&self, ray: &Ray, t_range: RangeInclusive<f64>) -> Option<IntersectRecord<'_>> {
         let oc = ray.origin() - self.center();
         let a = ray.direction().length_squared();
         (a != 0.0 && self.radius != 0.0).map_or(None, || {
@@ -50,7 +47,7 @@ impl IIntersect for Sphere {
                 .map(|root| {
                     let point3 = ray.at(root);
                     let outward_normal = (point3 - self.center) / self.radius;
-                    IntersectRecord::new(point3, ray, &outward_normal, root)
+                    IntersectRecord::new(point3, ray, &outward_normal, root, &self.material)
                 })
         })
     }

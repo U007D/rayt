@@ -1,6 +1,6 @@
-use std::num::NonZeroUsize;
-
 pub mod msg;
+
+use std::num::NonZeroUsize;
 
 pub(crate) struct Image {
     pub width:  NonZeroUsize,
@@ -28,3 +28,4 @@ const IMAGE_HEIGHT: NonZeroUsize = NonZeroUsize::new(
 pub(crate) const IMAGE: Image = Image { width: IMAGE_WIDTH, height: IMAGE_HEIGHT };
 #[allow(clippy::unwrap_used)]
 pub const MAX_RENDER_DEPTH: usize = 50;
+pub const ZERO_LIMIT: f64 = 1e-8;

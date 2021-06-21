@@ -1,19 +1,23 @@
-use crate::primitives::{Point3, Ray, Vec3};
+use crate::{
+    material::Material,
+    primitives::{Point3, Ray, Vec3},
+};
 use bool_ext::BoolExt;
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct IntersectRecord {
+pub struct IntersectRecord<'mat> {
     point3:     Point3,
     normal:     Vec3,
     t:          f64,
     front_face: bool,
+    material:   &'mat Material,
 }
 
-impl IntersectRecord {
+impl<'mat> IntersectRecord<'mat> {
     #[must_use]
-    pub fn new(point3: Point3, ray: &Ray, outward_normal: &Vec3, t: f64) -> Self {
+    pub fn new(point3: Point3, ray: &Ray, outward_normal: &Vec3, t: f64, material: &'mat Material) -> Self {
         let (front_face, normal) = Self::face_normal(ray, outward_normal);
-        Self { point3, normal, t, front_face }
+        Self { point3, normal, t, front_face, material }
     }
 
     #[must_use]
